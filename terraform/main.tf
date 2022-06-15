@@ -5,6 +5,19 @@ terraform {
     }
   }
   required_version = ">=0.75.0"
+
+  backend "s3" {
+    endpoint   = "storage.yandexcloud.net"
+    bucket     = "zlobniy-shurik-terraform-storage"
+    region     = "ru-central1"
+    key        = "myterraform.tfstate"
+    access_key = "YCAJExo1efKl47MoZ2MK0DQBu"
+    secret_key = "YCNs1J-aIBklaRQOQDyC7S6JYlCF6Emt9CUjFjvb"
+
+    skip_region_validation      = true
+    skip_credentials_validation = true
+}
+
 }
 
 provider "yandex" {
@@ -13,3 +26,4 @@ provider "yandex" {
   folder_id = "b1g5mgpdiul101t5akk0"
   zone      = "ru-central1-a"
 }
+
