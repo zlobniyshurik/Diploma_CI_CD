@@ -1,0 +1,31 @@
+########################################
+# General settings for Yandex provider #
+########################################
+
+variable "ya_token" {
+  description = "Yandex token"
+  type        = string
+  default     = "<Яндекс токен>"
+  sensitive   = true
+}
+
+variable "ya_cloud_id" {
+  description = "Yandex cloud_id"
+  type        = string
+  default     = "<Яндекс cloud_id>"
+  sensitive   = true
+}
+
+variable "ya_folder_id" {
+  description = "Yandex folder_id"
+  type        = string
+  default     = "<Яндекс folder_id>"
+  sensitive   = true
+}
+
+variable "ya_zone" {
+  description = "Yandex geozone"
+  type        = string
+  default     = "ru-central1-a"
+}
+
