@@ -25,6 +25,6 @@ resource "yandex_compute_instance" "proxy" {
   }
 
   metadata = {
-    ssh-keys = "${file(format("%s", var.ssh_key_path))}"
+    ssh-keys = format("%s:%s", var.login_name, file(var.ssh_pubkey_path))
   }
 }

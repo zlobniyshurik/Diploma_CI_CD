@@ -9,11 +9,26 @@ variable "my_domain_tld" {
   default     = "diplomshurika.ru"
 }
 
+# Login name for my hosts
+# (depends from boot image)
+variable "login_name" {
+  description = "Login name for my hosts"
+  type        = string
+  default     = "cloud-user"
+}
+
 # Path to SSH public key
-variable "ssh_key_path" {
+variable "ssh_pubkey_path" {
   description = "Path to SSH public key"
   type        = string
   default     = "~/.ssh/ansible_ed25519.pub"
+}
+
+# Path to SSH private key
+variable "ssh_privkey_path" {
+  description = "Path to SSH public key"
+  type        = string
+  default     = "~/.ssh/ansible_ed25519"
 }
 
 # AlmaLinux8 boot disk image
