@@ -1,0 +1,8 @@
+---
+- name: "Install supplementary tools"
+  ansible.builtin.dnf:
+    name:
+      - net-tools
+      - wget
+      - nano
+    state: present

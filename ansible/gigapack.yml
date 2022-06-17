@@ -1,0 +1,32 @@
+---
+- name: "Install common tools"
+  hosts: all
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - install_tools
+
+- name: "Install git"
+  hosts:
+    - proxy
+  become: true
+  become_user: "root"
+  roles:
+    - install_git
+
+- name: "Install nginx"
+  hosts:
+    - proxy
+  become: true
+  become_user: "root"
+  roles:
+    - install_nginx
+
+#- name: "Install A-record"
+#  hosts:
+#    - proxy
+#  become: true
+#  become_user: "root"
+#  roles:
+#    - a_record_change
