@@ -36,16 +36,30 @@ variable "he_net_key" {
   description = "Key for change A-record in mydomain.tld zone"
   type        = string
   default     = "<token_for_A_record_from_zone_mydomain.tld_from_dns.he.net>"
+  sensitive   = true
 }
 
 variable "he_net_login" {
   description = "Login for dns.he.net"
   type        = string
   default     = "<Login_for_dns.he.net>"
+  sensitive   = true
 }
 
 variable "he_net_pass" {
   description = "Password for dns.he.net"
   type        = string
   default     = "<Password_for_dns.he.net>"
+  sensitive   = true
+}
+
+##############################
+# Settings for Let's Encrypt #
+##############################
+
+variable "cert_admin_mail" {
+  description = "Admin mail for domain owner"
+  type        = string
+  default     = "<adminmail@somedomain.tld>"
+  sensitive   = true
 }

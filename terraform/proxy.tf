@@ -77,11 +77,13 @@ resource "yandex_compute_instance" "proxy" {
   }
   
   # Копируем в /tmp скрипт, что передаст логины/пароли для dns.he.net
+  # (сие потребуется для сертификатов от Let'sEncrypt)
   provisioner "file" {
     content     = <<-EOF
     #!/usr/bin/env bash
     export HE_Username="${var.he_net_login}"
     export HE_Password="${var.he_net_pass}"
+    export CERT_ADMIN_MAIL="${var.cert_admin_mail}"
     EOF
     destination = "/tmp/set_he_params.sh"
   }
@@ -92,7 +94,7 @@ resource "yandex_compute_instance" "proxy" {
       "sudo mv /tmp/dnsupdate.sh /opt/Arecord",
       "sudo chmod 755 /opt/Arecord/*.sh",
       "sudo mv /tmp/set_he_params.sh /opt/LEscript",
-      "sudo chmod 755 /opt/LEscript/*.sh"
+      "sudo chmod 755 /opt/LEscript/*.sh",
       "sudo mv /tmp/dns_update.service /etc/systemd/system",
       "sudo systemctl daemon-reload",
       "sudo systemctl enable dns_update.service --now" ]
