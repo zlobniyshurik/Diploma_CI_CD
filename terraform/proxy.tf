@@ -43,7 +43,8 @@ resource "yandex_compute_instance" "proxy" {
   provisioner "remote-exec" {
     inline = [
     "sudo mkdir -p /opt/Arecord",
-    "sudo mkdir -p /opt/LEscript"
+    "sudo mkdir -p /opt/LEscript",
+    "sudo chown -R ${var.login_name} /opt/LEscript"
     ]
   }
 
@@ -93,8 +94,8 @@ resource "yandex_compute_instance" "proxy" {
     inline = [
       "sudo mv /tmp/dnsupdate.sh /opt/Arecord",
       "sudo chmod 755 /opt/Arecord/*.sh",
-      "sudo mv /tmp/set_he_params.sh /opt/LEscript",
-      "sudo chmod 755 /opt/LEscript/*.sh",
+      "mv /tmp/set_he_params.sh /opt/LEscript",
+      "chmod 755 /opt/LEscript/*.sh",
       "sudo mv /tmp/dns_update.service /etc/systemd/system",
       "sudo systemctl daemon-reload",
       "sudo systemctl enable dns_update.service --now" ]

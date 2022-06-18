@@ -1,0 +1,52 @@
+---
+- name: "Download and unpack 'acme.sh' script"
+  ansible.builtin.unarchive:
+    src: "https://github.com/acmesh-official/acme.sh/archive/refs/heads/master.zip"
+    remote_src: true
+    dest: "/opt/LEscript"
+    creates: "/opt/LEscript/acme.sh-master"
+
+- name: "Copy supplementary scripts"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/opt/LEscript"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  with_items:
+    - "files/get_cert.sh"
+    - "files/install_acme.sh"
+    - "files/register_acc.sh"
+
+- name: "Check if catalog '/opt/LEscript/acme.sh' already exists"
+  ansible.builtin.stat:
+    path: "/opt/LEscript/acme.sh"
+  register: setup_done
+
+- name: "Setup 'acme.sh' script"
+  ansible.builtin.command:
+    cmd: "/opt/LEscript/install_acme.sh"
+  when: not setup_done.stat.exists
+
+- name: "Check if LE-account already registered"
+  ansible.builtin.stat:
+    path: "/opt/LEscript/acme.config/myaccount.key"
+  register: key_done
+
+- name: "Register account in Let's Encrypt"
+  ansible.builtin.command:
+    cmd: "/opt/LEscript/register_acc.sh"
+  when: not key_done.stat.exists
+
+- name: "Check if certs already got"
+  ansible.builtin.find:
+    paths: "/opt/LEscript/certs"
+    file_type: directory
+    recurse: false
+  register: get_cert_done
+
+- name: "Get certs"
+  ansible.builtin.command:
+    cmd: "/opt/LEscript/get_cert.sh"
+  when: get_cert_done.matched == 0
