@@ -28,7 +28,8 @@ resource "yandex_compute_instance" "proxy" {
     ssh-keys = format("%s:%s", var.login_name, file(var.ssh_pubkey_path))
   }
 
-  # Криво, но с передачей параметров в ансибл ещё хуже
+  # Криво, но с передачей секретных параметров в конкретную машину в ансибл
+  # костылей получается ещё больше
   connection {
     type     = "ssh"
     host     = "${yandex_compute_instance.proxy.network_interface.0.nat_ip_address}"
@@ -37,9 +38,13 @@ resource "yandex_compute_instance" "proxy" {
     timeout = "2m"
   }
 
-  # Создаём каталог для скрипта обновления A-записи
+  # Создаём каталоги для скрипта обновления A-записи
+  # и для скрипта получения/обновления LE-сертификатов
   provisioner "remote-exec" {
-    inline = ["sudo mkdir -p /opt/Arecord"]
+    inline = [
+    "sudo mkdir -p /opt/Arecord",
+    "sudo mkdir -p /opt/LEscript"
+    ]
   }
 
   # Копируем в /tmp прокси-машины скрипт обновления A-записи в DNS he.net
@@ -70,12 +75,24 @@ resource "yandex_compute_instance" "proxy" {
     EOF
     destination = "/tmp/dns_update.service"
   }
+  
+  # Копируем в /tmp скрипт, что передаст логины/пароли для dns.he.net
+  provisioner "file" {
+    content     = <<-EOF
+    #!/usr/bin/env bash
+    export HE_Username="${var.he_net_login}"
+    export HE_Password="${var.he_net_pass}"
+    EOF
+    destination = "/tmp/set_he_params.sh"
+  }
 
   # Раскладываем файлы по местам и, собственно, запускаем сам сервис
   provisioner "remote-exec" {
     inline = [
       "sudo mv /tmp/dnsupdate.sh /opt/Arecord",
-      "sudo chmod 755 /opt/Arecord/dnsupdate.sh",
+      "sudo chmod 755 /opt/Arecord/*.sh",
+      "sudo mv /tmp/set_he_params.sh /opt/LEscript",
+      "sudo chmod 755 /opt/LEscript/*.sh"
       "sudo mv /tmp/dns_update.service /etc/systemd/system",
       "sudo systemctl daemon-reload",
       "sudo systemctl enable dns_update.service --now" ]
