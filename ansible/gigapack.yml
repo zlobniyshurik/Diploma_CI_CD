@@ -15,4 +15,6 @@
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - install_proxy
+    - role: install_proxy
+      vars:
+        proxy_my_domain_tld: "diplomshurika.ru"

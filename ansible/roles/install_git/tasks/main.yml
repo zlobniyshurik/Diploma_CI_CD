@@ -1,5 +1,0 @@
----
-- name: "Install git"
-  ansible.builtin.dnf:
-    name: git
-    state: present

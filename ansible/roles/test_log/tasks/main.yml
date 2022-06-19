@@ -1,0 +1,17 @@
+---
+- name: "Test"
+  ansible.builtin.debug:
+    var: proxy_my_domain_tld
+
+- name: "Create test dir"
+  ansible.builtin.file:
+    path: "/tmp/testlog"
+    state: "directory"
+    mode: "0755"
+
+- name: "Create subcatalogs"
+  ansible.builtin.file:
+    path: "/tmp/testlog/{{ item.value.server_log_dir }}"
+    state: "directory"
+    mode: "0755"
+  with_dict: "{{ proxy_settings }}"

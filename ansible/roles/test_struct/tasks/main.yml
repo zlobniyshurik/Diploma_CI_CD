@@ -1,0 +1,27 @@
+---
+- name: Test
+  hosts: localhost
+  gather_facts: false
+  vars:
+    proxy_settings:
+      www:
+        server_string: "wwwstr"
+        server_log: "wwwlog"
+        proxy_pass: "apppass"
+      grafana:
+        server_string: "grafanastr"
+        server_log: "grafanalog"
+        proxy_pass: "grafanapass"
+      monitoring:
+        server_string: "zabbixstr"
+        server_log: "zabbixlog"
+        proxy_pass: "zabbixpass"
+  tasks:
+    - name: TTT
+      ansible.builtin.debug:
+        msg: [
+          "Server is: {{ item.key }}",
+          "server string is: {{ item.value.server_string}}",
+          "server log is: {{ item.value.server_log }}",
+          "proxy pass is: {{ item.value.proxy_pass }}"]
+      with_dict: "{{ proxy_settings }}"

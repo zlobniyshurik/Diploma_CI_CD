@@ -1,0 +1,10 @@
+---
+- name: "Install test_log role"
+  hosts: localhost
+  become: true
+  become_user: "root"
+  remote_user: "shurik"
+  roles:
+    - role: test_log
+      vars:
+        proxy_my_domain_tld: "zzz.xxx"
