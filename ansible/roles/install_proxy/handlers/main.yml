@@ -1,2 +1,6 @@
 ---
-- name: "Enable nginx service"
+- name: "Restart and enable nginx service"
+  ansible.default.service:
+    name: nginx
+    state: restarted
+    enabled: yes

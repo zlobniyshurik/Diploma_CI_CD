@@ -68,6 +68,18 @@
     group: "root"
     mode: "0755"
   with_dict: "{{ proxy_settings }}"
+  notify: "Restart and enable nginx service"
+
+- name: "Create nginx config files"
+  become: true
+  ansible.builtin.template:
+    src: "templates/virt_server.j2"
+    dest: "/etc/nginx/conf.d/{{ item.key }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_dict: "{{ proxy_settings }}"
+  notify: "Restart and enable nginx service"
 
 - name: "Check if Diffie-Hellman key already exists"
   become: true

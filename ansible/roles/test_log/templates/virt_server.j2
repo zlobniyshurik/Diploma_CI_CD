@@ -1,0 +1,77 @@
+server {
+		listen 443 ssl http2;
+		listen [::]:443 ssl http2;
+
+		server_name {{ item.value.server_string }};
+
+                #Задаем пути к файлам логов
+		access_log /var/log/nginx/{{ item.value.server_log_dir }}/access.log main if=$loggable;
+		error_log /var/log/nginx/{{ item.value.server_log_dir }}/error.log;
+
+		###########################
+		# Настройки SSL для HTTPS #
+		###########################
+
+		resolver 8.8.8.8 [2001:4860:4860::8888];
+
+		# Указываем пути к RSA-сертификатам
+		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}/fullchain.cer;
+		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}/{{ proxy_my_domain_tld }}.key;
+
+		# Указываем пути к ECC-сертификатам
+		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc//fullchain_ecc.pem;
+		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/{{ proxy_my_domain_tld }}_ecc.key;
+
+		ssl_session_timeout 1d;
+		ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+		ssl_session_tickets off;
+
+		# 2048-битный ключ Диффи-Хеллмана
+		ssl_dhparam /etc/pki/tls/certs/dhparam.pem;
+
+		# Указываем виды шифрования (тут секьюрно, но без фанатизма)
+		ssl_protocols TLSv1.2 TLSv1.3;
+		ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+		ssl_prefer_server_ciphers on;
+
+		# позволяем серверу прикреплять OCSP-ответы, тем самым уменьшая время загрузки страниц у пользователей
+		ssl_stapling on;
+		ssl_stapling_verify on;
+		add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+
+		###########################
+		# Усложняем жизнь хакерам #
+		###########################
+
+		#Блокируем информацию по версии сервера
+		server_tokens off;
+
+		#антихакерские add_header`ы не добавляем - их прописывать надо
+		#непосредственно на проксируемом сайте, а не на прокси-сервере.
+
+		#######################
+		# Остальные настройки #
+		#######################
+		index index.html index.htm;
+
+                # Задаем максимальный размер вложений в письма в 100 Мб
+                client_max_body_size 100M;
+
+		####################
+		# Пути к каталогам #
+		####################
+
+		#Путь к корневому каталогу по умолчанию
+		root /usr/share/nginx/html;
+
+		location / {
+			add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+			proxy_set_header Host $host;
+
+			proxy_pass https://{{ item.value.proxy_pass }}$request_uri;
+		}
+	}

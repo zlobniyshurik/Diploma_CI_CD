@@ -15,3 +15,18 @@
     state: "directory"
     mode: "0755"
   with_dict: "{{ proxy_settings }}"
+
+- name: "Create test conf dir"
+  ansible.builtin.file:
+    path: "/tmp/testconf"
+    state: "directory"
+    mode: "0755"
+
+- name: "Create conf files"
+  ansible.builtin.template:
+    src: "templates/virt_server.j2"
+    dest: "/tmp/testconf/{{ item.key }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_dict: "{{ proxy_settings }}"
