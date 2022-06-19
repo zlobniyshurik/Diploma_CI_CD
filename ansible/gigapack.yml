@@ -10,11 +10,11 @@
 
 - name: "Install proxy"
   hosts: proxy
-  gather_facts: false
+  gather_facts: true
   become: true
   become_user: "root"
   remote_user: "cloud-user"
   roles:
     - role: install_proxy
       vars:
-        proxy_my_domain_tld: "diplomshurika.ru"
+        proxy_my_domain_tld: "{{ ansible_domain }}"

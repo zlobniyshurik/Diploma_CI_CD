@@ -6,4 +6,5 @@
       - wget
       - nano
       - unzip
+      - python3-firewall
     state: present
