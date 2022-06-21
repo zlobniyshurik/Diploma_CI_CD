@@ -5,11 +5,11 @@ resource "yandex_compute_instance" "db" {
   hostname                  = "${var.db_name}${count.index+1}.${var.my_domain_tld}"
   allow_stopping_for_update = true
 
-  # В режиме 'stage' создаём виртуалку с 2ядрами, 2Gb RAM и производительностью ядер 20%,
+  # В режиме 'stage' создаём виртуалку с 2ядрами, 1 Gb RAM и производительностью ядер 20%,
   # В противном случае выделяем 4ядра, 4Gb RAM и производительностью 50%
   resources {
     cores  = (terraform.workspace == "stage") ? 2 : 4
-    memory = (terraform.workspace == "stage") ? 2 : 4
+    memory = (terraform.workspace == "stage") ? 1 : 4
     core_fraction = (terraform.workspace == "stage") ? 20 : 50
   }
 

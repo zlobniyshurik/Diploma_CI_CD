@@ -1,0 +1,16 @@
+---
+- name: "Install MariaDB server"
+  ansible.builtin.dnf:
+    name:
+      - mariadb-server
+      - python3-PyMySQL
+    state: present
+  notify: "Enable mariadb service"
+
+- name: "Setup firewall for MySQL"
+  ansible.posix.firewalld:
+    zone: "home"
+    service: "mysql"
+    state: "enabled"
+    permanent: true
+    immediate: true

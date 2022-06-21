@@ -86,6 +86,13 @@ resource "yandex_compute_instance" "proxy" {
     destination = "/tmp/tf_vars.sh"
   }
 
+  # Копируем в /tmp конфиг для nginx'а,
+  # который обеспечит балансировку MySQL-трафика
+  provisioner "file" {
+    source = "balancer.conf"
+    destination = "/tmp/mysql.conf"
+  }
+
   # Раскладываем файлы по местам, задаём права/владельцев
   # и, собственно, запускаем сам сервис обновления A-записей
   provisioner "remote-exec" {
@@ -99,8 +106,13 @@ resource "yandex_compute_instance" "proxy" {
       "sudo mkdir -p /opt/LEscript",
       "sudo chown -R ${var.login_name}:${var.login_name} /opt/LEscript",
       "mv /tmp/tf_vars.sh /opt/LEscript",
-      "chmod 755 /opt/LEscript/*.sh"
+      "chmod 755 /opt/LEscript/*.sh",
+      "sudo mkdir -p /etc/nginx",
+      "sudo mv /tmp/mysql.conf /etc/nginx",
+      "sudo chown -R root:root /etc/nginx"
     ]
   }
-
+  depends_on = [
+    local_file.balancer
+  ]
 }

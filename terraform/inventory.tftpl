@@ -7,5 +7,5 @@ ${hostname_proxy} ansible_host=${ip_proxy}
 
 [Databases]
 %{ for index, group in hostname_db ~}
-${hostname_db[index]} ansible_host=${ip_db[index]}
+${hostname_db[index]} ansible_host=${ip_db[index]} db_master=${hostname_db[0]}.${domain_tld}
 %{ endfor ~}

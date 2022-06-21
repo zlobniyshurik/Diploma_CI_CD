@@ -105,3 +105,12 @@
     permanent: true
     state: enabled
     immediate: true
+
+- name: "Allow MySQL on firewall"
+  become: true
+  ansible.posix.firewalld:
+    zone: "home"
+    service: mysql
+    permanent: true
+    state: enabled
+    immediate: true

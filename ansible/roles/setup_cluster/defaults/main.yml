@@ -1,0 +1,7 @@
+---
+# MySQL root password after initial setup
+# (usually empty)
+cluster_init_root_password: ""
+
+# MySQL root password for cluster
+cluster_root_password: "StrongPassword#100500"

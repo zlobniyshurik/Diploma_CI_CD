@@ -10,7 +10,7 @@ resource "null_resource" "wait" {
 
 resource "null_resource" "run_ansible" {
   provisioner "local-exec" {
-    command = format("ANSIBLE_FORCE_COLOR=1 ansible-playbook -T 30 -u %s --key-file %s  -i ../ansible/inventory ../ansible/gigapack.yml", var.login_name, var.ssh_privkey_path)
+    command = format("ANSIBLE_FORCE_COLOR=1 ansible-playbook -T 30 -u %s --key-file %s  -i ../ansible/inventory ../ansible/gigapack.yml --step", var.login_name, var.ssh_privkey_path)
   }
 
   depends_on = [

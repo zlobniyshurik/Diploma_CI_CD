@@ -1,0 +1,20 @@
+---
+- name: "Remove all anonymous users"
+  community.mysql.mysql_user:
+    name: ''
+    host_all: true
+    state: "absent"
+
+- name: "Setup root password for cluster and limit it to localhost login only"
+  community.mysql.mysql_user:
+    name: "root"
+    host: "{{ item }}"
+    password: "{{ cluster_root_password }}"
+    check_implicit_admin: true
+    login_user: "root"
+    login_password: "{{ cluster_init_root_password }}"
+    state: "present"
+  with_items:
+    - "127.0.0.1"
+    - "::1"
+    - "localhost"

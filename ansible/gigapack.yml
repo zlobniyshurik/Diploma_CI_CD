@@ -1,15 +1,15 @@
 ---
 - name: "Install common tools"
   hosts: all
-  gather_facts: false
+  gather_facts: true
   become: true
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - install_common
+    - role: install_common
 
 - name: "Install proxy"
-  hosts: ProxiesDisabled
+  hosts: Proxies
   gather_facts: true
   become: true
   become_user: "root"
@@ -18,3 +18,12 @@
     - role: install_proxy
       vars:
         proxy_my_domain_tld: "{{ ansible_domain }}"
+
+- name: "Install databases"
+  hosts: Databases
+  gather_facts: true
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_mariadb
