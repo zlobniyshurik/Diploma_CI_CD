@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
-source "/opt/LEscript/set_he_params.sh"
+# Script registering an account on Let's Encrypt
+source "/opt/LEscript/tf_vars.sh"
 cd "/opt/LEscript/acme.sh"
-./acme.sh --register-account --server letsencrypt --config-home "/opt/LEscript/acme.config"
+if STAGE_MODE; then ./acme.sh --register-account --server letsencrypt --config-home "/opt/LEscript/acme.config" --staging
+else ./acme.sh --register-account --server letsencrypt --config-home "/opt/LEscript/acme.config"
+fi

@@ -1,8 +1,0 @@
----
-- name: "Install proxy role"
-  hosts: localhost
-  become: true
-  become_user: "root"
-  remote_user: "shurik"
-  roles:
-    - install_proxy

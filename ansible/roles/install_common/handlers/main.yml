@@ -1,0 +1,7 @@
+---
+- name: "Enable firewalld service"
+  become: true
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true

@@ -1,5 +1,13 @@
 ---
+- name: "Install firewalld"
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - firewalld
+  notify: "Enable firewalld service"
+
 - name: "Install supplementary tools"
+  become: true
   ansible.builtin.dnf:
     name:
       - net-tools

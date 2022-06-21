@@ -55,3 +55,17 @@ variable "proxy_name" {
   type        = string
   default     = "proxy"
 }
+
+# DB name
+variable "db_name"  {
+  description = "Database host name"
+  type        = string
+  default     = "db0"
+}
+
+# Number of DB-nodes
+variable "db_count"  {
+  description = "Number of DB-nodes"
+  type        = number
+  default     = 2
+}

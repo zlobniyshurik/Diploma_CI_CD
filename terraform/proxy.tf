@@ -1,19 +1,24 @@
 resource "yandex_compute_instance" "proxy" {
   name                      = var.proxy_name
   zone                      = var.geo_zone
-  hostname                  = format("%s.%s", var.proxy_name, var.my_domain_tld)
+  hostname                  = "${var.proxy_name}.${var.my_domain_tld}"
   allow_stopping_for_update = true
+  labels                    = {
+    ansible_group = "proxy"
+  }
 
+  # В режиме 'stage' создаём виртуалку с 1Gb RAM и производительностью ядер 20%,
+  # В противном случае выделяем 2Gb RAM и производительностью 50%
   resources {
     cores  = 2
-    memory = 2
-    core_fraction = 20
+    memory = (terraform.workspace == "stage") ? 1 : 2
+    core_fraction = (terraform.workspace == "stage") ? 20 : 50
   }
 
   boot_disk {
     initialize_params {
       image_id    = var.boot_disk_image_id
-      name        = format("root-%s", var.proxy_name)
+      name        = "root-${var.proxy_name}"
       type        = "network-hdd"
       size        = "10"
     }
@@ -25,7 +30,7 @@ resource "yandex_compute_instance" "proxy" {
   }
 
   metadata = {
-    ssh-keys = format("%s:%s", var.login_name, file(var.ssh_pubkey_path))
+    ssh-keys = "${var.login_name}:${file(var.ssh_pubkey_path)}"
   }
 
   # Криво, но с передачей секретных параметров в конкретную машину в ансибл
@@ -38,19 +43,8 @@ resource "yandex_compute_instance" "proxy" {
     timeout = "2m"
   }
 
-  # Создаём каталоги для скрипта обновления A-записи
-  # и для скрипта получения/обновления LE-сертификатов
-  provisioner "remote-exec" {
-    inline = [
-    "sudo mkdir -p /opt/Arecord",
-    "sudo mkdir -p /opt/LEscript",
-    "sudo chown -R ${var.login_name} /opt/LEscript"
-    ]
-  }
-
   # Копируем в /tmp прокси-машины скрипт обновления A-записи в DNS he.net
   provisioner "file" {
-
     content     = <<-EOF
     #!/bin/bash
     curl -4 "https://"${var.my_domain_tld}":"${var.he_net_key}"@dyn.dns.he.net/nic/update?hostname="${var.my_domain_tld}
@@ -76,29 +70,37 @@ resource "yandex_compute_instance" "proxy" {
     EOF
     destination = "/tmp/dns_update.service"
   }
-  
-  # Копируем в /tmp скрипт, что передаст логины/пароли для dns.he.net
-  # (сие потребуется для сертификатов от Let'sEncrypt)
+
+  # Копируем в /tmp скрипт, что передаст параметры из TF
+  # в настраиваемую машину
   provisioner "file" {
     content     = <<-EOF
     #!/usr/bin/env bash
-    export HE_Username="${var.he_net_login}"
-    export HE_Password="${var.he_net_pass}"
-    export CERT_ADMIN_MAIL="${var.cert_admin_mail}"
+    # variables from Terraform
+    # generates automatically
+    HE_Username="${var.he_net_login}"
+    HE_Password="${var.he_net_pass}"
+    CERT_ADMIN_MAIL="${var.cert_admin_mail}"
+    STAGE_MODE="${(terraform.workspace == "stage") ? "true" : "false"}"
     EOF
-    destination = "/tmp/set_he_params.sh"
+    destination = "/tmp/tf_vars.sh"
   }
 
-  # Раскладываем файлы по местам и, собственно, запускаем сам сервис
+  # Раскладываем файлы по местам, задаём права/владельцев
+  # и, собственно, запускаем сам сервис обновления A-записей
   provisioner "remote-exec" {
     inline = [
+      "sudo mkdir -p /opt/Arecord",
       "sudo mv /tmp/dnsupdate.sh /opt/Arecord",
-      "sudo chmod 755 /opt/Arecord/*.sh",
-      "mv /tmp/set_he_params.sh /opt/LEscript",
-      "chmod 755 /opt/LEscript/*.sh",
       "sudo mv /tmp/dns_update.service /etc/systemd/system",
+      "sudo chmod 755 /opt/Arecord/*.sh",
       "sudo systemctl daemon-reload",
-      "sudo systemctl enable dns_update.service --now" ]
+      "sudo systemctl enable dns_update.service --now",
+      "sudo mkdir -p /opt/LEscript",
+      "sudo chown -R ${var.login_name}:${var.login_name} /opt/LEscript",
+      "mv /tmp/tf_vars.sh /opt/LEscript",
+      "chmod 755 /opt/LEscript/*.sh"
+    ]
   }
 
 }

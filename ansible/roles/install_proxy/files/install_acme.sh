@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-source "/opt/LEscript/set_he_params.sh"
+# Script that installs 'acme.sh' from the distribution
+source "/opt/LEscript/tf_vars.sh"
 cd "/opt/LEscript/acme.sh-master"
 ./acme.sh --install  \
 --home "/opt/LEscript/acme.sh" \

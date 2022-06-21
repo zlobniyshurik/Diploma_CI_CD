@@ -7,13 +7,10 @@
     creates: "/opt/LEscript/acme.sh-master"
 
 - name: "Copy supplementary scripts"
-  become: true
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/opt/LEscript"
     mode: "0755"
-    owner: "root"
-    group: "root"
   with_items:
     - "files/get_cert.sh"
     - "files/install_acme.sh"

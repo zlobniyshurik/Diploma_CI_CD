@@ -6,10 +6,10 @@
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - install_tools
+    - install_common
 
 - name: "Install proxy"
-  hosts: proxy
+  hosts: ProxiesDisabled
   gather_facts: true
   become: true
   become_user: "root"
