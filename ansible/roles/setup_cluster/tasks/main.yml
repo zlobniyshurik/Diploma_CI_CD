@@ -1,4 +1,13 @@
 ---
+- name: "Temporary enable firewall for MySQL : FIXIT"
+  become: true
+  ansible.posix.firewalld:
+    zone: "public"
+    service: "mysql"
+    state: "enabled"
+    permanent: true
+    immediate: true
+
 - name: "Remove all anonymous users"
   community.mysql.mysql_user:
     name: ''
@@ -18,3 +27,29 @@
     - "127.0.0.1"
     - "::1"
     - "localhost"
+
+- name: "Calculate server-id"
+  ansible.builtin.set_fact:
+    server_id: "{{ ansible_hostname | regex_search ('[0-9]+') | int }}"
+
+- name: "Show server-id"
+  ansible.builtin.debug:
+    msg: "'server-id' is: {{ server_id }}"
+
+- name: "Copy server.conf to /etc/my.cnf.d"
+  become: true
+  ansible.builtin.template:
+    src: "templates/server.cnf.j2"
+    dest: "/etc/my.cnf.d/server.cnf"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+  notify: "Restart MariaDB"
+
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+- name: "Show who is master ;)"
+  ansible.builtin.debug:
+    msg: "Cluster master is: {{ cluster_master | default('Unknown') }}"

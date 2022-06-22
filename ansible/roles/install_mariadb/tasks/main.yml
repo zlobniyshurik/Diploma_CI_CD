@@ -1,5 +1,6 @@
 ---
 - name: "Install MariaDB server"
+  become: true
   ansible.builtin.dnf:
     name:
       - mariadb-server
@@ -8,6 +9,7 @@
   notify: "Enable mariadb service"
 
 - name: "Setup firewall for MySQL"
+  become: true
   ansible.posix.firewalld:
     zone: "home"
     service: "mysql"

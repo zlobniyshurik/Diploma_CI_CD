@@ -1,0 +1,17 @@
+#
+# These groups are read by MariaDB server.
+# Use it for options that only the server (but not clients) should see
+#
+# See the examples of server my.cnf files in /usr/share/mysql/
+#
+
+# this is read by the standalone daemon and embedded servers
+[server]
+binlog_format=mixed
+#replication
+server-id = {{ server_id }}
+report_host = {{ ansible_hostname }}
+log_bin = /var/lib/mysql/mariadb-bin
+log_bin_index = /var/lib/mysql/mariadb-bin.index
+relay_log = /var/lib/mysql/relay-bin
+relay_log_index = /var/lib/mysql/relay-bin.index

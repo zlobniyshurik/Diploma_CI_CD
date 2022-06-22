@@ -27,3 +27,6 @@
   remote_user: "cloud-user"
   roles:
     - role: install_mariadb
+    - role: setup_cluster
+      vars:
+        cluster_master: "{{ db_master }}"
