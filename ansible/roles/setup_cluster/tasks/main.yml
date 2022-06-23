@@ -4,24 +4,36 @@
     msg: "Cluster master will be: {{ cluster_master | default('Unknown') }}"
 
 - name: "Remove all anonymous users"
-  community.mysql.mysql_user:
-    name: ''
-    host_all: true
-    state: "absent"
+  block:
+    - name: "Try to remove all anonymous users..."
+      community.mysql.mysql_user:
+        name: ''
+        host_all: true
+        state: "absent"
+  rescue:
+    - name: "Well..."
+      ansible.builtin.debug:
+        msg: "May be all anonymous users already removed?"
 
 - name: "Setup root password for cluster and limit it to localhost login only"
-  community.mysql.mysql_user:
-    name: "root"
-    host: "{{ item }}"
-    password: "{{ cluster_root_password }}"
-    check_implicit_admin: true
-    login_user: "root"
-    login_password: "{{ cluster_init_root_password }}"
-    state: "present"
-  with_items:
-    - "127.0.0.1"
-    - "::1"
-    - "localhost"
+  block:
+    - name: "Try to setup root password for cluster and limit it to localhost login only"
+      community.mysql.mysql_user:
+        name: "root"
+        host: "{{ item }}"
+        password: "{{ cluster_root_password }}"
+        check_implicit_admin: true
+        login_user: "root"
+        login_password: "{{ cluster_init_root_password }}"
+        state: "present"
+      with_items:
+        - "127.0.0.1"
+        - "::1"
+        - "localhost"
+  rescue:
+    - name: "Oops!!!"
+      ansible.builtin.debug:
+        msg: "Oops!!! It's seems that root password already set"
 
 - name: "Calculate server-id"
   ansible.builtin.set_fact:
@@ -44,4 +56,3 @@
 - name: "Flush handlers"
   ansible.builtin.meta:
     flush_handlers
-
