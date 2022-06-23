@@ -4,4 +4,4 @@
   ansible.builtin.service:
     name: "mariadb"
     state: "started"
-    enabled: true
+    enabled: "yes"

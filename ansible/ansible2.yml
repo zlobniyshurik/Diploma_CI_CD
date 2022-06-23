@@ -1,0 +1,32 @@
+---
+- name: "Reconfigure DNF to use proxy"
+  hosts: Pass2
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: setup_proxy_dnf
+      vars:
+        proxy_fqdn: "{{ proxy_name }}"
+
+- name: "Install common tools"
+  hosts: Pass2
+  gather_facts: true
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_common
+
+- name: "Install databases"
+  hosts: Databases
+  gather_facts: true
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_mariadb
+    - role: setup_cluster
+      vars:
+        cluster_master: "{{ db_master }}"

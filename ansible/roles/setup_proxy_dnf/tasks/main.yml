@@ -1,0 +1,17 @@
+---
+- name: "Setup proxy settings"
+  ansible.builtin.debug:
+    msg: [
+      "Proxy will be configured with next settings:",
+      "{{ proxy_protocol }}{{ proxy_name }}:{{ proxy_port }}"
+    ]
+
+- name: "Replace DNF-config"
+  become: true
+  ansible.builtin.template:
+    backup: true
+    src: dnf.j2
+    dest: /etc/dnf/dnf.conf
+    owner: "root"
+    group: "root"
+    mode: "0644"

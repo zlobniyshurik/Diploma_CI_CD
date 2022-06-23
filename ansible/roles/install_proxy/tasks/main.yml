@@ -1,4 +1,12 @@
 ---
+- name: "Role *install_proxy* starting..."
+  ansible.builtin.debug:
+    msg: [
+      "*install_proxy* role starting...",
+      "proxy_my_domain_tld is: {{ proxy_my_domain_tld }}",
+      "proxy_tf_workspace is: {{ proxy_tf_workspace }}"
+    ]
+
 - name: "Download and unpack 'acme.sh' script"
   ansible.builtin.unarchive:
     src: "https://github.com/acmesh-official/acme.sh/archive/refs/heads/master.zip"
@@ -34,7 +42,7 @@
 - name: "Register account in Let's Encrypt"
   ansible.builtin.command:
     cmd: "/opt/LEscript/register_acc.sh"
-  when: not key_done.stat.exists
+  when: (not key_done.stat.exists) and (proxy_tf_workspace != "stage")
 
 - name: "Check if certs already got"
   ansible.builtin.find:
@@ -46,7 +54,31 @@
 - name: "Get certs"
   ansible.builtin.command:
     cmd: "/opt/LEscript/get_cert.sh"
-  when: get_cert_done.matched == 0
+  when: (get_cert_done.matched == 0) and (proxy_tf_workspace != "stage")
+
+- name: "Make catalogs for fake certs in stage mode"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}"
+    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc"
+  when: tf_workspace == "stage"
+
+- name: "Create fake certs in stage mode"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: touch
+    mode: '0644'
+  with_items:
+    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/fullchain.cer"
+    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/{{ proxy_my_domain_tld }}.key"
+    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/fullchain.cer"
+    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/{{ proxy_my_domain_tld }}.key"
+  when: tf_workspace == "stage"
 
 - name: "Install nginx v1.20"
   become: true

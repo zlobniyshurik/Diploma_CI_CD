@@ -1,6 +1,6 @@
 ---
 - name: "Install common tools"
-  hosts: all
+  hosts: Proxies
   gather_facts: true
   become: true
   become_user: "root"
@@ -15,18 +15,8 @@
   become_user: "root"
   remote_user: "cloud-user"
   roles:
+    - role: install_squid
     - role: install_proxy
       vars:
         proxy_my_domain_tld: "{{ ansible_domain }}"
-
-- name: "Install databases"
-  hosts: Databases
-  gather_facts: true
-  become: true
-  become_user: "root"
-  remote_user: "cloud-user"
-  roles:
-    - role: install_mariadb
-    - role: setup_cluster
-      vars:
-        cluster_master: "{{ db_master }}"
+        proxy_tf_workspace: "{{ tf_workspace }}"

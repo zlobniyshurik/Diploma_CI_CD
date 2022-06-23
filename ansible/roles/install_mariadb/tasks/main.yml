@@ -16,3 +16,7 @@
     state: "enabled"
     permanent: true
     immediate: true
+
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers

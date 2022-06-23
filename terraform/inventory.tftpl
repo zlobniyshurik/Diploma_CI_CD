@@ -1,11 +1,28 @@
-[Gigapack:children]
+[Diplom:children]
+Pass1
+Pass2
+
+[Pass1:children]
 Proxies
+
+[Pass2:children]
 Databases
 
 [Proxies]
-${hostname_proxy} ansible_host=${ip_proxy}
+${fqdn_proxy} ansible_host=${ip_proxy} ansible_user=${ssh_login_user} ansible_ssh_private_key_file=${ssh_ansible_key}
 
 [Databases]
-%{ for index, group in hostname_db ~}
-${hostname_db[index]} ansible_host=${ip_db[index]} db_master=${hostname_db[0]}.${domain_tld}
+%{ for index, group in fqdn_db ~}
+${fqdn_db[index]} ansible_host="${ip_db[index]}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
 %{ endfor ~}
+
+[Diplom:vars]
+tf_workspace = "${tf_workspace}"
+
+[Pass2:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ${ssh_ansible_key} ${ssh_login_user}@${ip_proxy}"'
+proxy_name = "${fqdn_proxy}"
+
+[Databases:vars]
+db_master = "${fqdn_db[0]}"
+

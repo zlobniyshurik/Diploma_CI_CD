@@ -1,4 +1,8 @@
 ---
+- name: "Role *install_common* starting..."
+  ansible.builtin.debug:
+    msg: "*install_common* role starting..."
+
 - name: "Install firewalld"
   become: true
   ansible.builtin.dnf:

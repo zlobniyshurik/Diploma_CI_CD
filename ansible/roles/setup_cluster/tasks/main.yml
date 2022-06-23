@@ -1,12 +1,7 @@
 ---
-- name: "Temporary enable firewall for MySQL : FIXIT"
-  become: true
-  ansible.posix.firewalld:
-    zone: "public"
-    service: "mysql"
-    state: "enabled"
-    permanent: true
-    immediate: true
+- name: "Show who is master ;)"
+  ansible.builtin.debug:
+    msg: "Cluster master will be: {{ cluster_master | default('Unknown') }}"
 
 - name: "Remove all anonymous users"
   community.mysql.mysql_user:
@@ -50,6 +45,3 @@
   ansible.builtin.meta:
     flush_handlers
 
-- name: "Show who is master ;)"
-  ansible.builtin.debug:
-    msg: "Cluster master is: {{ cluster_master | default('Unknown') }}"

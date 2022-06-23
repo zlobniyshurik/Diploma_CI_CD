@@ -1,0 +1,15 @@
+---
+# Proxy fqdn or IP
+proxy_name: "proxy.example.com"
+
+# Proxy protocol e.g. "http://"
+proxy_protocol: "http://"
+
+# Proxy port
+proxy_port: "3128"
+
+# Proxy user
+proxy_user: ""
+
+# Proxy password
+proxy_password: ""

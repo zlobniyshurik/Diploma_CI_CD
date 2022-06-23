@@ -1,0 +1,7 @@
+---
+- name: "Start squid service"
+  become: true
+  ansible.builtin.systemd:
+    name: squid.service
+    state: started
+    enabled: true

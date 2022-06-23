@@ -1,0 +1,34 @@
+---
+- name: "Role *install_squid* starting..."
+  ansible.builtin.debug:
+    msg: "*install_squid* role starting..."
+
+- name: "Install Squid-proxy"
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - squid
+    state: present
+  notify: "Start squid service"
+
+- name: "Copy squid config (allow ALL)"
+  become: true
+  ansible.builtin.copy:
+    src: "files/squid.conf"
+    dest: "/etc/squid"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+- name: "Enable firewall for proxy access"
+  become: true
+  ansible.posix.firewalld:
+    zone: "home"
+    service: "squid"
+    state: "enabled"
+    permanent: true
+    immediate: true
