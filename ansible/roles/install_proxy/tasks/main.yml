@@ -88,6 +88,11 @@
     state: present
   notify: "Restart and enable nginx service"
 
+- name: "Disable SElinux for nginx"            # Иначе не хочет работать балансер на нестандартных
+  ansible.builtin.command:                     # для nginx'а портах
+    "semanage permissive -a httpd_t"           # Чёртовы параноики!
+  changed_when: false
+
 - name: "Create log folders for nginx"
   become: true
   ansible.builtin.file:

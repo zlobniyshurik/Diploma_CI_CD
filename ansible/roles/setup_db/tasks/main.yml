@@ -1,0 +1,27 @@
+---
+- name: "Get node FQDN"
+  ansible.builtin.set_fact:
+    db_nodename: "{{ ansible_fqdn }}"
+
+- name: "Create new database and user"
+  block:
+    - name: "Create database"
+      community.mysql.mysql_db:
+        login_user: "{{ setup_db_admin_user }}"
+        login_password: "{{ setup_db_admin_pass }}"
+        login_host: "{{ setup_db_host }}"
+        login_port: "{{ setup_db_port }}"
+        name: "{{ setup_db_name }}"
+        state: present
+
+    - name: "Create user"
+      community.mysql.mysql_user:
+        login_user: "{{ setup_db_admin_user }}"
+        login_password: "{{ setup_db_admin_pass }}"
+        login_host: "{{ setup_db_host }}"
+        login_port: "{{ setup_db_port }}"
+        state: present
+        name: "{{ setup_db_owner_user }}"
+        password: "{{ setup_db_owner_pass }}"
+        priv: "{{ setup_db_name }}.*:ALL,GRANT"
+  when: db_nodename == setup_db_host

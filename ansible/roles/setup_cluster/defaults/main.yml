@@ -5,3 +5,13 @@ cluster_init_root_password: ""
 
 # MySQL root password for cluster
 cluster_root_password: "StrongPassword#100500"
+
+# MySQL network IPs, in MySQL format
+# e.g. "192.168.1.%" or "10.0.%"
+cluster_network: "172.16.%"
+
+# MySQL replication user name
+cluster_repl_user: "replica_user"
+
+# MySQL replication user password
+cluster_repl_pass: "resu_acilper"

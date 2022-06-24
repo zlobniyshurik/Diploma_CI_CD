@@ -1,0 +1,22 @@
+---
+# MySQL DB host/IP
+setup_db_host: "db.mydomain.tld"
+
+# MySQL DB port
+# default: 3306
+setup_db_port: "3306"
+
+# MySQL admin user for DB
+setup_db_admin_user: "root"
+
+# MySQL admin password for DB
+setup_db_admin_pass: "StrongPassword#100500"
+
+# Name of created DB
+setup_db_name: "database"
+
+# Owner name of created DB
+setup_db_owner_user: "owner_name"
+
+# Owner password
+setup_db_owner_pass: "owner_pass"

@@ -23,6 +23,7 @@
       - nano
       - unzip
       - python3-firewall
+      - policycoreutils-python-utils
     state: present
 
 - name: "Add local IPs to 'home' zone in firewall"

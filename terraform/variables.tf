@@ -67,9 +67,9 @@ variable "proxy_name" {
   default     = "proxy"
 }
 
-# DB name
-variable "db_name"  {
-  description = "Database host name"
+# DB name prefix
+variable "db_name_prefix"  {
+  description = "Database host name prefix"
   type        = string
   default     = "db0"
 }

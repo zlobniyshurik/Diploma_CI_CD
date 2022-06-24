@@ -1,3 +1,4 @@
+# Настройки провайдера для Terraform'а
 terraform {
   required_providers {
     yandex = {

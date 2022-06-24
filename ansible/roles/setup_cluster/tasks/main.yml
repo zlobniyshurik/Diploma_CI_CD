@@ -3,6 +3,10 @@
   ansible.builtin.debug:
     msg: "Cluster master will be: {{ cluster_master | default('Unknown') }}"
 
+- name: "Get node FQDN"
+  ansible.builtin.set_fact:
+    db_nodename: "{{ ansible_fqdn }}"
+
 - name: "Remove all anonymous users"
   block:
     - name: "Try to remove all anonymous users..."
@@ -11,13 +15,13 @@
         host_all: true
         state: "absent"
   rescue:
-    - name: "Well..."
+    - name: "Oops!!!"
       ansible.builtin.debug:
-        msg: "May be all anonymous users already removed?"
+        msg: "Oops! It's seems that all anonymous users already removed?"
 
-- name: "Setup root password for cluster and limit it to localhost login only"
+- name: "Setup root password for cluster and limit it to local network login only"
   block:
-    - name: "Try to setup root password for cluster and limit it to localhost login only"
+    - name: "Try to setup root password for cluster and limit it to local network login only"
       community.mysql.mysql_user:
         name: "root"
         host: "{{ item }}"
@@ -26,18 +30,21 @@
         login_user: "root"
         login_password: "{{ cluster_init_root_password }}"
         state: "present"
+        priv: '*.*:ALL,GRANT'
       with_items:
+        - "%.{{ ansible_domain }}"
+        - "{{ cluster_network }}"
         - "127.0.0.1"
         - "::1"
         - "localhost"
   rescue:
     - name: "Oops!!!"
       ansible.builtin.debug:
-        msg: "Oops!!! It's seems that root password already set"
+        msg: "Oops! It's seems that root password already set."
 
 - name: "Calculate server-id"
   ansible.builtin.set_fact:
-    server_id: "{{ ansible_hostname | regex_search ('[0-9]+') | int }}"
+    server_id: "{{ ansible_fqdn | regex_search ('[0-9]+') | int }}"
 
 - name: "Show server-id"
   ansible.builtin.debug:
@@ -56,3 +63,75 @@
 - name: "Flush handlers"
   ansible.builtin.meta:
     flush_handlers
+
+- name: "About current node..."
+  ansible.builtin.debug:
+    msg: [
+      "db_nodename is: {{ db_nodename }}",
+      "cluster_master is: {{ cluster_master }}"
+    ]
+
+- name: "Setup master node"
+  block:
+    - name: "Create replication user"
+      community.mysql.mysql_user:
+        login_user: "root"
+        login_password: "{{ cluster_root_password }}"
+        name: "{{ cluster_repl_user }}"
+        password: "{{ cluster_repl_pass }}"
+        host: "{{ cluster_network }}"
+        priv: '*.*:REPLICATION SLAVE'
+        state: present
+  when: db_nodename == cluster_master
+
+- name: "Setup slave node(s)"
+  block:
+    - name: "Get MASTER status"
+      community.mysql.mysql_replication:
+        login_user: "root"
+        login_password: "{{ cluster_root_password }}"
+        login_host: "{{ cluster_master }}"
+        mode: getmaster
+      register: masterdata
+
+    - name: "Show MASTER status"
+      ansible.builtin.debug:
+        msg: [
+          "MASTER STATUS from {{ cluster_master }}",
+          "-------------------------------------",
+          "binlog file is: {{ masterdata.File }}",
+          "binlog position is: {{ masterdata.Position }}"
+        ]
+
+    - name: "Check SLAVE status"
+      community.mysql.mysql_replication:
+        login_user: "root"
+        login_password: "{{ cluster_root_password }}"
+        mode: getslave
+      register: slavedata
+
+    - name: "CHANGE MASTER TO"
+      community.mysql.mysql_replication:
+        login_user: "root"
+        login_password: "{{ cluster_root_password }}"
+        mode: changemaster
+        primary_host: "{{ cluster_master }}"
+        primary_user: "{{ cluster_repl_user }}"
+        primary_password: "{{ cluster_repl_pass }}"
+        primary_log_file: "{{ masterdata.File }}"
+        primary_log_pos: "{{ masterdata.Position }}"
+      when: not slavedata.Is_Replica
+
+    - name: "START SLAVE"
+      community.mysql.mysql_replication:
+        login_user: "root"
+        login_password: "{{ cluster_root_password }}"
+        mode: startslave
+      when: not slavedata.Is_Replica
+
+    - name: "Can not start replication..."
+      ansible.builtin.debug:
+        msg: "Replication already running!"
+      when: slavedata.Is_Replica
+
+  when: db_nodename != cluster_master

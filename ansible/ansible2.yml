@@ -19,7 +19,7 @@
   roles:
     - role: install_common
 
-- name: "Install databases"
+- name: "Install Database-servers"
   hosts: Databases
   gather_facts: true
   become: true
@@ -30,3 +30,9 @@
     - role: setup_cluster
       vars:
         cluster_master: "{{ db_master }}"
+    - role: setup_db
+      vars:                                # неохота мне еще и явки/пароли вордпресса в переменные выносить
+        setup_db_host: "{{ db_master }}"
+        setup_db_name: "wordpress"
+        setup_db_owner_user: "wordpress"
+        setup_db_owner_pass: "wordpress"

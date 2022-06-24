@@ -10,7 +10,7 @@
 
 - name: "Install proxy"
   hosts: Proxies
-  gather_facts: true
+  gather_facts: false
   become: true
   become_user: "root"
   remote_user: "cloud-user"
@@ -18,5 +18,5 @@
     - role: install_squid
     - role: install_proxy
       vars:
-        proxy_my_domain_tld: "{{ ansible_domain }}"
+        proxy_my_domain_tld: "{{ tf_my_domain_tld }}"
         proxy_tf_workspace: "{{ tf_workspace }}"
