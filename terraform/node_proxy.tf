@@ -52,7 +52,7 @@ resource "yandex_compute_instance" "proxy" {
   }
 
   # Копируем в /tmp прокси-машины конфиг для SSH (отключение проверки ключей)
-  # Я уже и не знаю - надо ли оно здесь...
+  # Без отключения проверок Ansible подвисает при подключении к нодам
   provisioner "file" {
     content     = <<-EOF
     Host *
