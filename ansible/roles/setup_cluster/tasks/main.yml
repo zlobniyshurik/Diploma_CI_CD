@@ -27,11 +27,12 @@
         host: "{{ item }}"
         password: "{{ cluster_root_password }}"
         check_implicit_admin: true
-        login_user: "root"
+        login_user: "root@localhost"
         login_password: "{{ cluster_init_root_password }}"
         state: "present"
         priv: '*.*:ALL,GRANT'
       with_items:
+        - "{{ db_nodename }}"
         - "%.{{ ansible_domain }}"
         - "{{ cluster_network }}"
         - "127.0.0.1"
