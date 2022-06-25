@@ -1,0 +1,9 @@
+---
+# State service after install (started/reloaded/restarted/stopped)
+install_nginx_state: "stopped"
+
+# Enable service after install (true/false)
+install_nginx_enabled: false
+
+# nginx version
+install_nginx_ver: "1.20"

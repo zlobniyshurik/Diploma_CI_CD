@@ -1,0 +1,7 @@
+---
+- name: "Setup nginx service"
+  become: true
+  ansible.builtin.systemd:
+    name: "nginx.service"
+    state: "{{ install_nginx_state }}"
+    enabled: "{{ install_nginx_enabled }}"

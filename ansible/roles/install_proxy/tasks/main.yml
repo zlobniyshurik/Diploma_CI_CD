@@ -3,9 +3,25 @@
   ansible.builtin.debug:
     msg: [
       "*install_proxy* role starting...",
+      "-----------------------------------------",
       "proxy_my_domain_tld is: {{ proxy_my_domain_tld }}",
       "proxy_tf_workspace is: {{ proxy_tf_workspace }}"
     ]
+
+- name: "Disable SElinux for nginx"
+  become: true                                 # Иначе не хочет работать балансер на нестандартных
+  ansible.builtin.command:                     # для nginx'а портах
+    "semanage permissive -a httpd_t"           # Чёртовы параноики!
+  changed_when: false
+
+- name: "Install nginx v1.20"
+  become: true
+  ansible.builtin.include_role:
+    name: install_nginx
+  vars:
+    install_nginx_state: "started"
+    install_nginx_enabled: true
+    install_nginx_name: "@nginx:1.20/common"
 
 - name: "Download and unpack 'acme.sh' script"
   ansible.builtin.unarchive:
@@ -55,43 +71,7 @@
   ansible.builtin.command:
     cmd: "/opt/LEscript/get_cert.sh"
   when: (get_cert_done.matched == 0) and (proxy_tf_workspace != "stage")
-
-- name: "Make catalogs for fake certs in stage mode"
-  become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: '0755'
-  with_items:
-    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}"
-    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc"
-  when: tf_workspace == "stage"
-
-- name: "Create fake certs in stage mode"
-  become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: touch
-    mode: '0644'
-  with_items:
-    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/fullchain.cer"
-    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/{{ proxy_my_domain_tld }}.key"
-    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/fullchain.cer"
-    - "/opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/{{ proxy_my_domain_tld }}.key"
-  when: tf_workspace == "stage"
-
-- name: "Install nginx v1.20"
-  become: true
-  ansible.builtin.dnf:
-    name:
-      - "@nginx:1.20/common"
-    state: present
-  notify: "Restart and enable nginx service"
-
-- name: "Disable SElinux for nginx"            # Иначе не хочет работать балансер на нестандартных
-  ansible.builtin.command:                     # для nginx'а портах
-    "semanage permissive -a httpd_t"           # Чёртовы параноики!
-  changed_when: false
+  notify: "Reload nginx service"
 
 - name: "Create log folders for nginx"
   become: true
@@ -102,7 +82,6 @@
     group: "root"
     mode: "0755"
   with_dict: "{{ proxy_settings }}"
-  notify: "Restart and enable nginx service"
 
 - name: "Create nginx config files"
   become: true
@@ -113,7 +92,7 @@
     group: "root"
     mode: "0644"
   with_dict: "{{ proxy_settings }}"
-  notify: "Restart and enable nginx service"
+  notify: "Reload nginx service"
 
 - name: "Check if Diffie-Hellman key already exists"
   become: true
@@ -121,9 +100,9 @@
     path: "/etc/ssl/certs/dhparam.pem"
   register: dh_key_done
 
-- name: "Generate Diffie-Hellman key"
-  become: true
-  ansible.builtin.command:
+- name: "Generate Diffie-Hellman key"  # Ключи генерирует долго - минуты 2
+  become: true                         # А если поставить 4096 бит, то и
+  ansible.builtin.command:             # 20 минут - не предел.
     cmd: "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
   when: not dh_key_done.stat.exists
 
@@ -143,8 +122,8 @@
     state: enabled
     immediate: true
 
-- name: "Allow MySQL on firewall"
-  become: true
+- name: "Allow MySQL on firewall"   # На тот маловероятный случай,
+  become: true                      # если захотим пользоваться балансером.
   ansible.posix.firewalld:
     zone: "home"
     service: mysql

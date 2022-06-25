@@ -1,0 +1,11 @@
+---
+- name: "Install php"
+  become: true
+  ansible.builtin.dnf:
+    name: "{{ install_php_packages }}"
+    state: present
+  notify: "Setup php-fpm service"
+
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers

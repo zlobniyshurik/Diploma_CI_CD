@@ -36,3 +36,7 @@
         setup_db_name: "wordpress"
         setup_db_owner_user: "wordpress"
         setup_db_owner_pass: "wordpress"
+
+# - name: "Install Wordpress-server"
+#   hosts: Wordpress
+#   gather_facts: false

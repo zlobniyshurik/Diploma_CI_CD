@@ -1,0 +1,20 @@
+---
+- name: "Install PHP 8.0"
+  ansible.builtin.include_role:
+    name: install_php
+  vars:
+    install_php_ver: "{{ install_app_php_ver }}"
+
+- name: "Install nginx v1.20"
+  ansible.builtin.include_role:
+    name: install_nginx
+  vars:
+    install_nginx_state: stopped
+    install_nginx_enabled: true
+    install_nginx_ver: "{{ install_app_nginx_ver }}"
+
+- name: "Add nginx to 'apache' group (for PHP compatibility)"
+  ansible.builtin.user:
+    name: "nginx"
+    append: true
+    groups: "apache"

@@ -1,0 +1,21 @@
+---
+- name: "Install nginx"
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - "@nginx:{{ install_nginx_ver }}/common"
+    state: present
+  notify: "Setup nginx service"
+
+- name: "Create /var/www catalog"
+  become: true
+  ansible.builtin.file:
+    path: "/var/www"
+    state: directory
+    owner: "nginx"
+    group: "nginx"
+    mode: "0755"
+
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers

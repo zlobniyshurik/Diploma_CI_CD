@@ -60,14 +60,14 @@ variable "geo_zone" {
 # Hosts settings #
 ##################
 
-# Proxy name
+# Proxy nodename
 variable "proxy_name" {
   description = "Reverse proxy host name"
   type        = string
   default     = "proxy"
 }
 
-# DB name prefix
+# DB nodename prefix
 variable "db_name_prefix"  {
   description = "Database host name prefix"
   type        = string
@@ -79,4 +79,11 @@ variable "db_count"  {
   description = "Number of DB-nodes"
   type        = number
   default     = 2
+}
+
+# Application nodename
+variable "app_name" {
+  description = "Application host name"
+  type        = string
+  default     = "app"
 }

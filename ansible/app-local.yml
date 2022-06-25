@@ -1,0 +1,8 @@
+---
+- name: "Install App server"
+  hosts: Test
+  become: true
+  become_user: "root"
+  remote_user: "root"
+  roles:
+    - install_app

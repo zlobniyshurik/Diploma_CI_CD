@@ -1,0 +1,22 @@
+---
+# State service after install
+# (started/reloaded/restarted/stopped)
+install_php_state: "started"
+
+# Enable service after install (true/false)
+install_php_enabled: true
+
+# nginx version
+install_php_ver: "8.0"
+
+# php packages
+install_php_packages:
+  - "@php:{{ install_php_ver }}/common"
+  - php-fpm
+  - php-gd
+  - php-mysqlnd
+  - php-json
+  - php-mbstring
+  - php-pdo
+  - php-pecl-zip
+  - php-xml

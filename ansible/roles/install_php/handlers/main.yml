@@ -1,0 +1,7 @@
+---
+- name: "Setup php-fpm service"
+  become: true
+  ansible.builtin.systemd:
+    name: "php-fpm.service"
+    state: "{{ install_php_state }}"
+    enabled: "{{ install_php_enabled }}"

@@ -7,14 +7,18 @@ Proxies
 
 [Pass2:children]
 Databases
+Applications
 
 [Proxies]
-${fqdn_proxy} ansible_host=${ip_proxy} ansible_user=${ssh_login_user} ansible_ssh_private_key_file=${ssh_ansible_key}
+${fqdn_proxy} ansible_host="${ip_proxy}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
 
 [Databases]
 %{ for index, group in fqdn_db ~}
 ${fqdn_db[index]} ansible_host="${ip_db[index]}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
 %{ endfor ~}
+
+[Applications]
+${fqdn_app} ansible_host="${ip_app}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
 
 [Diplom:vars]
 tf_workspace = "${tf_workspace}"
@@ -27,3 +31,4 @@ proxy_name = "${fqdn_proxy}"
 [Databases:vars]
 db_master = "${fqdn_db[0]}"
 
+[Applications:vars]
