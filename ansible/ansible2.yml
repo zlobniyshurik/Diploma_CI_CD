@@ -37,6 +37,11 @@
         setup_db_owner_user: "wordpress"
         setup_db_owner_pass: "wordpress"
 
-# - name: "Install Wordpress-server"
-#   hosts: Wordpress
-#   gather_facts: false
+- name: "Install Wordpress-server"
+  hosts: Applications
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_app

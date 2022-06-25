@@ -27,6 +27,7 @@
     state: present
 
 - name: "Add local IPs to 'home' zone in firewall"
+  become: true
   ansible.posix.firewalld:
     zone: "home"
     source: "{{ ansible_default_ipv4.address.split('.')[0] }}.{{ ansible_default_ipv4.address.split('.')[1] }}.0.0/16"

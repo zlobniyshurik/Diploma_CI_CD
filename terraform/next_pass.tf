@@ -29,7 +29,7 @@ resource "null_resource" "run_ansible1" {
 # Заливаем ноды с "серыми" IP.
 resource "null_resource" "run_ansible2" {
   provisioner "local-exec" {
-    command = "ANSIBLE_FORCE_COLOR=1 ansible-playbook -T 30 -i ../ansible/inventory ../ansible/ansible2.yml --step"
+    command = "ANSIBLE_FORCE_COLOR=1 ansible-playbook -T 30 -i ../ansible/inventory ../ansible/ansible2.yml"
   }
 
   depends_on = [

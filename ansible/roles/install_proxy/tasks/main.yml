@@ -15,7 +15,6 @@
   changed_when: false
 
 - name: "Install nginx v1.20"
-  become: true
   ansible.builtin.include_role:
     name: install_nginx
   vars:
