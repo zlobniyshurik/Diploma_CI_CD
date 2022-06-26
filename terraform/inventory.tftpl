@@ -8,6 +8,8 @@ Proxies
 [Pass2:children]
 Databases
 Applications
+GitLab
+Runners
 
 [Proxies]
 ${fqdn_proxy} ansible_host="${ip_proxy}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
@@ -19,6 +21,14 @@ ${fqdn_db[index]} ansible_host="${ip_db[index]}" ansible_user="${ssh_login_user}
 
 [Applications]
 ${fqdn_app} ansible_host="${ip_app}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
+
+[GitLab]
+${fqdn_gitlab} ansible_host="${ip_gitlab}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
+
+[Runners]
+%{ for index, group in fqdn_runner ~}
+${fqdn_runner[index]} ansible_host="${ip_runner[index]}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
+%{ endfor ~}
 
 [Diplom:vars]
 tf_workspace = "${tf_workspace}"
@@ -32,3 +42,5 @@ proxy_name = "${fqdn_proxy}"
 db_master = "${fqdn_db[0]}"
 
 [Applications:vars]
+
+[GitLab:vars]

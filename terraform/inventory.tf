@@ -12,6 +12,10 @@ resource "local_file" "inventory" {
       ip_db            = "${yandex_compute_instance.db.*.network_interface.0.ip_address}"
       fqdn_app         = "${yandex_compute_instance.app.fqdn}"
       ip_app           = "${yandex_compute_instance.app.network_interface.0.ip_address}"
+      fqdn_gitlab      = "${yandex_compute_instance.gitlab.fqdn}"
+      ip_gitlab        = "${yandex_compute_instance.gitlab.network_interface.0.ip_address}"
+      fqdn_runner      = "${yandex_compute_instance.runner.*.fqdn}"
+      ip_runner        = "${yandex_compute_instance.runner.*.network_interface.0.ip_address}"
     }
   )
   filename = "../ansible/inventory"
@@ -19,6 +23,8 @@ resource "local_file" "inventory" {
   depends_on = [
     yandex_compute_instance.proxy,
     yandex_compute_instance.db.0,
-    yandex_compute_instance.app
+    yandex_compute_instance.app,
+    yandex_compute_instance.gitlab,
+    yandex_compute_instance.runner.0
   ]
 }

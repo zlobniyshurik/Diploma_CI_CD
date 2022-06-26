@@ -87,3 +87,24 @@ variable "app_name" {
   type        = string
   default     = "app"
 }
+
+# GitLab nodename
+variable "gitlab_name" {
+  description = "GitLab host name"
+  type        = string
+  default     = "gitlab"
+}
+
+# GitLab Runner nodename prefix
+variable "runner_name_prefix" {
+  description = "GitLab Runner host name prefix"
+  type        = string
+  default     = "runner"
+}
+
+# Number of GitLab runner nodes
+variable "runner_count"  {
+  description = "Number of GitLab Runner nodes"
+  type        = number
+  default     = 1
+}
