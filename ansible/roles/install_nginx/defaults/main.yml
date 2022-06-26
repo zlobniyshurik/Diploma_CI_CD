@@ -7,3 +7,6 @@ install_nginx_enabled: false
 
 # nginx version
 install_nginx_ver: "1.20"
+
+# Catalog for sites
+install_nginx_web_dir: "/var/www"

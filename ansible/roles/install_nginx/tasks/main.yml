@@ -7,10 +7,10 @@
     state: present
   notify: "Setup nginx service"
 
-- name: "Create /var/www catalog"
+- name: "Create web directory"
   become: true
   ansible.builtin.file:
-    path: "/var/www"
+    path: "{{ install_nginx_web_dir }}"
     state: directory
     owner: "nginx"
     group: "nginx"

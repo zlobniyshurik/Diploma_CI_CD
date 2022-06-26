@@ -1,0 +1,48 @@
+---
+- name: "Create directory for Wordpress"
+  become: true
+  ansible.builtin.file:
+    path: "{{ install_wordpress_dir }}"
+    state: directory
+    owner: "{{ install_wordpress_www_user }}"
+    group: "{{ install_wordpress_www_group }}"
+    mode: "0755"
+
+- name: "Download and unpack Wordpress"
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ install_wordpress_url }}"
+    remote_src: true
+    dest: "{{ install_wordpress_dir }}"
+    owner: "{{ install_wordpress_www_user }}"
+    group: "{{ install_wordpress_www_group }}"
+    mode: "0644"
+
+- name: "Set permissions for catalogs"
+  become: true
+  ansible.builtin.file:
+    path: "{{ install_wordpress_dir }}"
+    state: directory
+    owner: "{{ install_wordpress_www_user }}"
+    group: "{{ install_wordpress_www_group }}"
+    mode: "0755"
+    recurse: true
+
+- name: "Generate 8 random strings for Paranoia Gods"
+  ansible.builtin.set_fact:
+    install_wordpress_r1: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r2: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r3: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r4: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r5: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r6: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r7: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+    install_wordpress_r8: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
+
+- name: "Apply config to Wordpress"
+  ansible.builtin.template:
+    src: "templates/wp-config.php.j2"
+    dest: "{{ install_wordpress_dir }}/wordpress/wp-config.php"
+    owner: "{{ install_wordpress_www_user }}"
+    group: "{{ install_wordpress_www_group }}"
+    mode: "0644"

@@ -1,0 +1,30 @@
+---
+# Site name
+install_wordpress_my_domain_tld: "www.example.com"
+
+# Wordpress version
+install_wordpress_ver: "6.0"
+
+# Wordpress sources URL
+install_wordpress_url: "https://ru.wordpress.org/wordpress-{{ install_wordpress_ver }}-ru_RU.zip"
+
+# MySQL database FQDN
+install_wordpress_db_host: "db.example.com"
+
+# Wordpress database name
+install_wordpress_db_name: "wordpress"
+
+# Wordpress database user
+install_wordpress_db_user: "wordpress"
+
+# Wordpress db user password
+install_wordpress_db_pass: "wordpress"
+
+# WWW-catalog for Wordpress
+install_wordpress_dir: "/var/www/wordpress"
+
+# User for Wordpress WWW-catalog
+install_wordpress_www_user: "nginx"
+
+# Group for Wordpress WWW-catalog
+install_wordpress_www_group: "nginx"

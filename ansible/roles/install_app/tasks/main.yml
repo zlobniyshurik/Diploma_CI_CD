@@ -14,7 +14,51 @@
     install_nginx_ver: "{{ install_app_nginx_ver }}"
 
 - name: "Add nginx to 'apache' group (for PHP compatibility)"
+  become: true
   ansible.builtin.user:
     name: "nginx"
     append: true
     groups: "apache"
+
+- name: "Enable HTTP in firewall"
+  become: true
+  ansible.posix.firewalld:
+    zone: "home"
+    service: "http"
+    state: "enabled"
+    permanent: true
+    immediate: true
+
+- name: "Install Wordpress"
+  ansible.builtin.include_role:
+    name: install_wordpress
+  vars:
+    install_wordpress_site_name: "{{ install_app_my_domain_tld }}"
+    install_wordpress_db_host: "{{ install_app_db_host }}"
+    install_wordpress_db_name: "{{ install_app_db_name }}"
+    install_wordpress_db_user: "{{ install_app_db_user }}"
+    install_wordpress_db_pass: "{{ install_app_db_pass }}"
+    install_wordpress_dir: "{{ install_app_web_dir }}/{{ install_wordpress_site_name }}"
+
+- name: "Create nginx log directory"
+  become: true
+  ansible.builtin.file:
+    path: "/var/log/nginx/{{ install_app_my_domain_tld }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+- name: "Create nginx config"
+  become: true
+  ansible.builtin.template:
+    src: "templates/site.conf.j2"
+    dest: "/etc/nginx/conf.d/{{ install_app_my_domain_tld }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Reload nginx service"
+
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers

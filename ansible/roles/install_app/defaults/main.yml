@@ -4,3 +4,21 @@ install_app_nginx_ver: "1.20"
 
 # PHP version
 install_app_php_ver: "8.0"
+
+# My.domain.tld
+install_app_my_domain_tld: "example.com"
+
+# FQDN of MySQL database
+install_app_db_host: "db.example.com"
+
+# Name of database
+install_app_db_name: "db_base"
+
+# User for access to DB
+install_app_db_user: "user"
+
+# User password
+install_app_db_pass: "password"
+
+# root catalog for sites
+install_app_web_dir: "/var/www"

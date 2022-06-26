@@ -1,8 +1,15 @@
 ---
-- name: "Install App server"
+- name: "Install Wordpress-server"
   hosts: Test
+  gather_facts: false
   become: true
   become_user: "root"
   remote_user: "root"
   roles:
-    - install_app
+    - role: install_app
+      vars:
+        install_app_my_domain_tld: "test.bfg-10k.ru"
+        install_app_db_host: "db01.bfg-10k.ru"
+        install_app_db_name: "wordpress"
+        install_app_db_user: "wordpress"
+        install_app_db_pass: "wordpress"
