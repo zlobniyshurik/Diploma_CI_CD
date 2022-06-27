@@ -33,10 +33,10 @@ ${fqdn_runner[index]} ansible_host="${ip_runner[index]}" ansible_user="${ssh_log
 [Diplom:vars]
 tf_workspace = "${tf_workspace}"
 tf_my_domain_tld = "${tf_my_domain_tld}"
+tf_proxy_name = "${fqdn_proxy}"
 
 [Pass2:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ${ssh_ansible_key} ${ssh_login_user}@${ip_proxy}"'
-proxy_name = "${fqdn_proxy}"
 
 [Databases:vars]
 db_master = "${fqdn_db[0]}"

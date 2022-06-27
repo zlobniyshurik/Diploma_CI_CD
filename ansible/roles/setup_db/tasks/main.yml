@@ -1,8 +1,12 @@
 ---
+# Вычисляем имя ноды
 - name: "Get node FQDN"
   ansible.builtin.set_fact:
     db_nodename: "{{ ansible_fqdn }}"
 
+# Если наша нода - master-нода,
+# то создаём базу и пользователя для
+# этой самой базы
 - name: "Create new database and user"
   block:
     - name: "Create database"

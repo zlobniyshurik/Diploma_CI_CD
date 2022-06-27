@@ -1,12 +1,15 @@
 ---
+# На всякий случай показываем кто тут босс :)
 - name: "Show who is master ;)"
   ansible.builtin.debug:
     msg: "Cluster master will be: {{ cluster_master | default('Unknown') }}"
 
+# Вычисляем FQDN данной конкретной ноды
 - name: "Get node FQDN"
   ansible.builtin.set_fact:
     db_nodename: "{{ ansible_fqdn }}"
 
+# Вычищаем из DB всех анонимных пользователей
 - name: "Remove all anonymous users"
   block:
     - name: "Try to remove all anonymous users..."
@@ -14,11 +17,13 @@
         name: ''
         host_all: true
         state: "absent"
-  rescue:
+  rescue:  # Если таких пользователей (уже) нет, то не выпадаем в осадок.
     - name: "Oops!!!"
       ansible.builtin.debug:
         msg: "Oops! It's seems that all anonymous users already removed?"
 
+# Задаём root пользователю DB непустой пароль и пытаемся хоть
+# немного ограничить доступ к этой учётке извне
 - name: "Setup root password for cluster and limit it to local network login only"
   block:
     - name: "Try to setup root password for cluster and limit it to local network login only"
@@ -38,19 +43,23 @@
         - "127.0.0.1"
         - "::1"
         - "localhost"
-  rescue:
+  rescue:  # Если пароль (уже) не пустой, то не падаем в обморок.
     - name: "Oops!!!"
       ansible.builtin.debug:
         msg: "Oops! It's seems that root password already set."
 
+# Вычисляем ID сервера - тупо используем номер ноды.
+# Для DB0100500.example.com ID будет 100500
 - name: "Calculate server-id"
   ansible.builtin.set_fact:
     server_id: "{{ ansible_fqdn | regex_search ('[0-9]+') | int }}"
 
+# Показываем ID сервера, так, на всякий случай
 - name: "Show server-id"
   ansible.builtin.debug:
     msg: "'server-id' is: {{ server_id }}"
 
+# Вносим ID в конфиг сервера данной ноды
 - name: "Copy server.conf to /etc/my.cnf.d"
   become: true
   ansible.builtin.template:
@@ -61,10 +70,13 @@
     mode: '0644'
   notify: "Restart MariaDB"
 
+# Перезапускаем сервер MariaDB
 - name: "Flush handlers"
   ansible.builtin.meta:
     flush_handlers
 
+# На вский случай показываем имя текущей ноды
+# и имя ноды, которая будет мастером
 - name: "About current node..."
   ansible.builtin.debug:
     msg: [
@@ -72,6 +84,8 @@
       "cluster_master is: {{ cluster_master }}"
     ]
 
+# Этот пункт работает ТОЛЬКО для MASTER-НОДЫ
+# Создаём пользователя для репликации
 - name: "Setup master node"
   block:
     - name: "Create replication user"
@@ -85,18 +99,19 @@
         state: present
   when: db_nodename == cluster_master
 
+# Этот пункт работает ТОЛЬКО для SLAVE-НОД
 - name: "Setup slave node(s)"
   block:
-    - name: "Get MASTER status"
-      community.mysql.mysql_replication:
+    - name: "Get MASTER status"           # Получаем данные по
+      community.mysql.mysql_replication:  # master-ноде
         login_user: "root"
         login_password: "{{ cluster_root_password }}"
         login_host: "{{ cluster_master }}"
         mode: getmaster
       register: masterdata
 
-    - name: "Show MASTER status"
-      ansible.builtin.debug:
+    - name: "Show MASTER status"          # Выдаем их на экран
+      ansible.builtin.debug:              # Вдруг кому нужно
         msg: [
           "MASTER STATUS from {{ cluster_master }}",
           "-------------------------------------",
@@ -104,15 +119,15 @@
           "binlog position is: {{ masterdata.Position }}"
         ]
 
-    - name: "Check SLAVE status"
-      community.mysql.mysql_replication:
+    - name: "Check SLAVE status"          # Проверяем - не запустил ли
+      community.mysql.mysql_replication:  # кто-то репликацию до нас
         login_user: "root"
         login_password: "{{ cluster_root_password }}"
         mode: getslave
       register: slavedata
 
-    - name: "CHANGE MASTER TO"
-      community.mysql.mysql_replication:
+    - name: "CHANGE MASTER TO"            # Если репликация ещё не запущена,
+      community.mysql.mysql_replication:  # настраиваем её
         login_user: "root"
         login_password: "{{ cluster_root_password }}"
         mode: changemaster
@@ -123,15 +138,15 @@
         primary_log_pos: "{{ masterdata.Position }}"
       when: not slavedata.Is_Replica
 
-    - name: "START SLAVE"
+    - name: "START SLAVE"                 # Запускаем репликацию
       community.mysql.mysql_replication:
         login_user: "root"
         login_password: "{{ cluster_root_password }}"
         mode: startslave
       when: not slavedata.Is_Replica
 
-    - name: "Can not start replication..."
-      ansible.builtin.debug:
+    - name: "Can not start replication..."  # Если же кто-то репликацию уже запустил
+      ansible.builtin.debug:                # до нас - ругаемся нехорошими словами
         msg: "Replication already running!"
       when: slavedata.Is_Replica
 

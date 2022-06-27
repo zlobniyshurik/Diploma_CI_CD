@@ -1,4 +1,6 @@
 ---
+# Создаём каталог для Wordpress по
+# заданным координатам
 - name: "Create directory for Wordpress"
   become: true
   ansible.builtin.file:
@@ -8,6 +10,8 @@
     group: "{{ install_wordpress_www_group }}"
     mode: "0755"
 
+# Выкачиваем и распаковываем дистрибутив
+# заданной версии
 - name: "Download and unpack Wordpress"
   become: true
   ansible.builtin.unarchive:
@@ -18,6 +22,7 @@
     group: "{{ install_wordpress_www_group }}"
     mode: "0644"
 
+# Задаём владельца и права каталогам Wordpress'а
 - name: "Set permissions for catalogs"
   become: true
   ansible.builtin.file:
@@ -28,6 +33,8 @@
     mode: "0755"
     recurse: true
 
+# Генерируем 8 рандомных строчек, что нужны для "подсаливания"
+# шифрования в Wordpress'е
 - name: "Generate 8 random strings for Paranoia Gods"
   ansible.builtin.set_fact:
     install_wordpress_r1: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
@@ -39,6 +46,8 @@
     install_wordpress_r7: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
     install_wordpress_r8: "{{ lookup('community.general.random_string', length = 64, special = false) }}"
 
+# Создаём предварительный конфиг с прописанной DB
+# и логином/паролем к ней.
 - name: "Apply config to Wordpress"
   ansible.builtin.template:
     src: "templates/wp-config.php.j2"

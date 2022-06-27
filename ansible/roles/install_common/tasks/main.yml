@@ -3,6 +3,8 @@
   ansible.builtin.debug:
     msg: "*install_common* role starting..."
 
+# Без фаервола, как голышом на званом
+# вечере - можно, но не прилично.
 - name: "Install firewalld"
   become: true
   ansible.builtin.dnf:
@@ -10,10 +12,13 @@
       - firewalld
   notify: "Enable firewalld service"
 
+# Запускаем фаервол
 - name: "Run handlers"
   ansible.builtin.meta:
     flush_handlers
 
+# Устанавливаем маленькие, но полезные утилиты,
+# без которых часть ролей не работает
 - name: "Install supplementary tools"
   become: true
   ansible.builtin.dnf:
@@ -26,6 +31,8 @@
       - policycoreutils-python-utils
     state: present
 
+# Создаем локальную зону "home", куда пускают только
+# с локальных IP
 - name: "Add local IPs to 'home' zone in firewall"
   become: true
   ansible.posix.firewalld:

@@ -1,4 +1,5 @@
 ---
+# Роль, настраивающая прокси-ноду нашего комплекса
 - name: "Role *install_proxy* starting..."
   ansible.builtin.debug:
     msg: [
@@ -8,12 +9,17 @@
       "proxy_tf_workspace is: {{ proxy_tf_workspace }}"
     ]
 
+# Вырубаем проверку SElinux для httpd_t
+# Иначе не хочет работать балансер на нестандартных
+# для nginx'а портах
+# Чёртовы параноики!
 - name: "Disable SElinux for nginx"
-  become: true                                 # Иначе не хочет работать балансер на нестандартных
-  ansible.builtin.command:                     # для nginx'а портах
-    "semanage permissive -a httpd_t"           # Чёртовы параноики!
+  become: true
+  ansible.builtin.command:
+    "semanage permissive -a httpd_t"
   changed_when: false
 
+# Ставим nginx
 - name: "Install nginx v1.20"
   ansible.builtin.include_role:
     name: install_nginx
@@ -22,13 +28,24 @@
     install_nginx_enabled: true
     install_nginx_name: "@nginx:1.20/common"
 
+# Проверяем - а надо ли скачивать дистрибутив
+# скрипта получения сертификатов?
+- name: "Check if catalog '/opt/LEscript/acme.sh-master' already exists"
+  ansible.builtin.stat:
+    path: "/opt/LEscript/acme.sh-master"
+  register: distr_downloaded
+
+# Скачиваем и распаковываем дистрибутив acme.sh
 - name: "Download and unpack 'acme.sh' script"
   ansible.builtin.unarchive:
     src: "https://github.com/acmesh-official/acme.sh/archive/refs/heads/master.zip"
     remote_src: true
     dest: "/opt/LEscript"
     creates: "/opt/LEscript/acme.sh-master"
+  when: not distr_downloaded.stat.exists
 
+# Эти вспомогательные скрипты нужны для получения
+# HTTPS-сертификатов
 - name: "Copy supplementary scripts"
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -39,39 +56,66 @@
     - "files/install_acme.sh"
     - "files/register_acc.sh"
 
+# Пытаемся восстановить сертификаты из бэкапа на локальном диске
+- name: "Restore from backup LE account settings and HTTPS-certs"
+  ansible.builtin.include_role:
+    name: restore_le_backup
+  vars:
+    restore_le_backup_src: "./LEbackup/{{ tf_proxy_name }}"
+    restore_le_backup_dest: "/opt/LEscript"
+    restore_le_backup_domain: "{{ proxy_my_domain_tld }}"
+
+# Проверяем - а надо ли устанавливать скрипт получения сертификатов?
 - name: "Check if catalog '/opt/LEscript/acme.sh' already exists"
   ansible.builtin.stat:
     path: "/opt/LEscript/acme.sh"
   register: setup_done
 
+# Устанавливаем скрипт получения сертификатов
 - name: "Setup 'acme.sh' script"
   ansible.builtin.command:
     cmd: "/opt/LEscript/install_acme.sh"
   when: not setup_done.stat.exists
 
+# Проверяем - есть ли у нас аккаунт на Let's Encrypt?
 - name: "Check if LE-account already registered"
   ansible.builtin.stat:
     path: "/opt/LEscript/acme.config/myaccount.key"
   register: key_done
 
+# Заводим аккаунт на Let's Encrypt
 - name: "Register account in Let's Encrypt"
   ansible.builtin.command:
     cmd: "/opt/LEscript/register_acc.sh"
-  when: (not key_done.stat.exists) and (proxy_tf_workspace != "stage")
+  when: not key_done.stat.exists
 
+# Проверяем - а нет ли уже у нас сертификатов?
 - name: "Check if certs already got"
-  ansible.builtin.find:
-    paths: "/opt/LEscript/certs"
-    file_type: directory
-    recurse: false
+  ansible.builtin.stat:
+    paths: "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/ca.cer"
   register: get_cert_done
 
+# Таки получаем сертификаты
 - name: "Get certs"
   ansible.builtin.command:
     cmd: "/opt/LEscript/get_cert.sh"
-  when: (get_cert_done.matched == 0) and (proxy_tf_workspace != "stage")
+  when: not get_cert_done.exists
   notify: "Reload nginx service"
 
+# Если аккаунт на Let'Encrypt уже зарегистрирован,
+# если сертификаты таки успешно получены, то
+# грех их не забэкапить локально для ускорения
+# следующего запуска и избежания бана на LE из-за
+# слишком частых обращений
+- name: "Backup LE account settings and HTTPS-certs"
+  ansible.builtin.include_role:
+    name: create_le_backup
+  vars:
+    create_le_backup_src: "/opt/LEscript"
+    create_le_backup_dest: "./LEbackup/{{ tf_proxy_name }}"
+    create_le_backup_domain: "{{ proxy_my_domain_tld }}"
+
+# Создаём по папке на каждый сервер
 - name: "Create log folders for nginx"
   become: true
   ansible.builtin.file:
@@ -82,6 +126,7 @@
     mode: "0755"
   with_dict: "{{ proxy_settings }}"
 
+# Создаём по конфигу на каждый сервер
 - name: "Create nginx config files"
   become: true
   ansible.builtin.template:
@@ -93,18 +138,23 @@
   with_dict: "{{ proxy_settings }}"
   notify: "Reload nginx service"
 
+# Проверяем - надо ли генерировать ключ Диффи-Хеллмана?
+# Их генерация - штука долгая
 - name: "Check if Diffie-Hellman key already exists"
   become: true
   ansible.builtin.stat:
     path: "/etc/ssl/certs/dhparam.pem"
   register: dh_key_done
 
+# Таки надо... Сходите за кофе
 - name: "Generate Diffie-Hellman key"  # Ключи генерирует долго - минуты 2
   become: true                         # А если поставить 4096 бит, то и
   ansible.builtin.command:             # 20 минут - не предел.
     cmd: "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
   when: not dh_key_done.stat.exists
 
+# Открываем дырки в фаерволе для местных (зона "home")
+# и публичных (зона "public") сервисов
 - name: "Allow HTTP on firewall"
   become: true
   ansible.posix.firewalld:
@@ -122,7 +172,7 @@
     immediate: true
 
 - name: "Allow MySQL on firewall"   # На тот маловероятный случай,
-  become: true                      # если захотим пользоваться балансером.
+  become: true                      # если захотим пользоваться MySQL-балансером.
   ansible.posix.firewalld:
     zone: "home"
     service: mysql

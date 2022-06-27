@@ -1,10 +1,12 @@
 ---
+# Ставим PHP 8.0
 - name: "Install PHP 8.0"
   ansible.builtin.include_role:
     name: install_php
   vars:
     install_php_ver: "{{ install_app_php_ver }}"
 
+# Ставим nginx v 1.20
 - name: "Install nginx v1.20"
   ansible.builtin.include_role:
     name: install_nginx
@@ -13,6 +15,8 @@
     install_nginx_enabled: true
     install_nginx_ver: "{{ install_app_nginx_ver }}"
 
+# У php каталог с сессиями заточен на апач и слетает на него же
+# при каждом обновлении. Проще добавить nginx в группу апача
 - name: "Add nginx to 'apache' group (for PHP compatibility)"
   become: true
   ansible.builtin.user:
@@ -20,6 +24,7 @@
     append: true
     groups: "apache"
 
+# Открываем в фаерволе доступ по HTTP
 - name: "Enable HTTP in firewall"
   become: true
   ansible.posix.firewalld:
@@ -29,6 +34,7 @@
     permanent: true
     immediate: true
 
+# Устанавливаем Wordpress
 - name: "Install Wordpress"
   ansible.builtin.include_role:
     name: install_wordpress
@@ -40,6 +46,7 @@
     install_wordpress_db_pass: "{{ install_app_db_pass }}"
     install_wordpress_dir: "{{ install_app_web_dir }}/{{ install_wordpress_site_name }}"
 
+# Создаём каталог для лога
 - name: "Create nginx log directory"
   become: true
   ansible.builtin.file:
@@ -49,6 +56,7 @@
     group: "root"
     mode: "0755"
 
+# Создаём конфиг для nginx'а
 - name: "Create nginx config"
   become: true
   ansible.builtin.template:
@@ -59,6 +67,8 @@
     mode: "0644"
   notify: "Reload nginx service"
 
+# На всякий случай, дёргаем перезагрузку
+# конфигурации nginx'а
 - name: "Flush handlers"
   ansible.builtin.meta:
     flush_handlers

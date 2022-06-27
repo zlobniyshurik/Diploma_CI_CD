@@ -1,4 +1,5 @@
 ---
+# Устанавливаем MariaDB сервер
 - name: "Install MariaDB server"
   become: true
   ansible.builtin.dnf:
@@ -8,6 +9,7 @@
     state: present
   notify: "Enable mariadb service"
 
+# Открываем доступ к нему через фаервол
 - name: "Setup firewall for MySQL"
   become: true
   ansible.posix.firewalld:
@@ -17,6 +19,7 @@
     permanent: true
     immediate: true
 
+# Запускаем сервис MariaDB
 - name: "Flush handlers"
   ansible.builtin.meta:
     flush_handlers

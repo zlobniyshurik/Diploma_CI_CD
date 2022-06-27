@@ -3,15 +3,33 @@
   ansible.builtin.debug:
     msg: [
       "Proxy will be configured with next settings:",
-      "{{ proxy_protocol }}{{ proxy_name }}:{{ proxy_port }}"
+      "{{ setup_proxy_protocol }}{{ setup_proxy_name }}:{{ setup_proxy_port }}"
     ]
 
+# Заставляем dnf работать через прокси
 - name: "Replace DNF-config"
   become: true
   ansible.builtin.template:
     backup: true
     src: dnf.j2
-    dest: /etc/dnf/dnf.conf
+    dest: "/etc/dnf/dnf.conf"
     owner: "root"
     group: "root"
     mode: "0644"
+
+# Задаём в глообальных системных установках
+# использовать прокси
+- name: "Set global system proxy settings"
+  become: true
+  ansible.builtin.template:
+    backup: true
+    src: set_proxy.sh.j2
+    dest: "/etc/profile.d/set_proxy.sh"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+- name: "Run proxy-script"
+  ansible.builtin.command:
+    cmd: "/etc/profile.d/set_proxy.sh"
+  when: true

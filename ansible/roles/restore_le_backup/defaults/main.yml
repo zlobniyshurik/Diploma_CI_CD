@@ -1,0 +1,10 @@
+---
+# Root folder for backup
+restore_le_backup_src: "./LEbackup"
+
+# Destination folder for restore from
+# backup LE-account and HTTPS-certs
+restore_le_backup_dest: "/opt/LEscript"
+
+# Certificates domain name
+restore_le_backup_domain: "example.com"

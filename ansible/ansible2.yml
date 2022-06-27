@@ -8,7 +8,7 @@
   roles:
     - role: setup_proxy_dnf
       vars:
-        proxy_fqdn: "{{ proxy_name }}"
+        setup_proxy_fqdn: "{{ tf_proxy_name }}"
 
 - name: "Install common tools"
   hosts: Pass2
@@ -52,20 +52,20 @@
         install_app_db_user: "wordpress"
         install_app_db_pass: "wordpress"
 
-- name: "Install Gitlab-server"
-  hosts: Applications
-  gather_facts: false
-  become: true
-  become_user: "root"
-  remote_user: "cloud-user"
-  roles:
-    - role: install_gitlab
+# - name: "Install Gitlab-server"
+#  hosts: Applications
+#  gather_facts: false
+#  become: true
+#  become_user: "root"
+#  remote_user: "cloud-user"
+#  roles:
+#    - role: install_gitlab
 
-- name: "Install Gitlab-runner"
-  hosts: Applications
-  gather_facts: false
-  become: true
-  become_user: "root"
-  remote_user: "cloud-user"
-  roles:
-    - role: install_grunner
+# - name: "Install Gitlab-runner"
+#  hosts: Applications
+#  gather_facts: false
+#  become: true
+#  become_user: "root"
+#  remote_user: "cloud-user"
+#  roles:
+#    - role: install_grunner

@@ -1,0 +1,10 @@
+---
+# Root folder for LEscript
+create_le_backup_src: "/opt/LEscript"
+
+# Destination folder for backup account
+# and HTTPS-certs
+create_le_backup_dest: "./LEbackup"
+
+# Certificates domain name
+create_le_backup_domain: "example.com"

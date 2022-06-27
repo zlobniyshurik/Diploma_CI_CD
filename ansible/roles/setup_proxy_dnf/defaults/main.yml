@@ -1,15 +1,15 @@
 ---
 # Proxy fqdn or IP
-proxy_name: "proxy.example.com"
+setup_proxy_name: "proxy.example.com"
 
 # Proxy protocol e.g. "http://"
-proxy_protocol: "http://"
+setup_proxy_protocol: "http://"
 
 # Proxy port
-proxy_port: "3128"
+setup_proxy_port: "3128"
 
 # Proxy user
-proxy_user: ""
+setup_proxy_user: ""
 
 # Proxy password
-proxy_password: ""
+setup_proxy_password: ""

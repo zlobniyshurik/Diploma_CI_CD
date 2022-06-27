@@ -1,4 +1,5 @@
 ---
+# Устанавливаем заданную версию PHP
 - name: "Install php"
   become: true
   ansible.builtin.dnf:
@@ -6,6 +7,8 @@
     state: present
   notify: "Setup php-fpm service"
 
+# (Не) запускаем php-fpm сервис
+# (от настроек зависит)
 - name: "Flush handlers"
   ansible.builtin.meta:
     flush_handlers
