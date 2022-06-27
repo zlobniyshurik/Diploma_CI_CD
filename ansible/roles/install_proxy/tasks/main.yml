@@ -26,7 +26,7 @@
   vars:
     install_nginx_state: "started"
     install_nginx_enabled: true
-    install_nginx_name: "@nginx:1.20/common"
+    install_nginx_ver: "1.20"
 
 # Проверяем - а надо ли скачивать дистрибутив
 # скрипта получения сертификатов?
