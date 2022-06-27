@@ -1,3 +1,0 @@
-Эта папка для файлов, автоматом создаваемых Terraform'ом
----
-This directory is for automatically generated Terraform files
