@@ -6,7 +6,7 @@ install_php_state: "started"
 # Enable service after install (true/false)
 install_php_enabled: true
 
-# nginx version
+# PHP version
 install_php_ver: "8.0"
 
 # php packages
