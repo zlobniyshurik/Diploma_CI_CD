@@ -5,6 +5,9 @@ install_app_nginx_ver: "1.20"
 # PHP version
 install_app_php_ver: "8.0"
 
+# WordPress version
+install_app_wordpress_ver: "6.0"
+
 # My.domain.tld
 install_app_my_domain_tld: "example.com"
 
