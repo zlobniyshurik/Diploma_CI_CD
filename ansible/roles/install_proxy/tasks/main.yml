@@ -145,18 +145,25 @@
     path: "/etc/ssl/certs/dhparam.pem"
   register: dh_key_done
 
-# Таки надо... Сходите за кофе
+# Таки надо генерить... Сходите за кофе
 - name: "Generate Diffie-Hellman key"  # Ключи генерирует долго - минуты 2
   become: true                         # А если поставить 4096 бит, то и
   ansible.builtin.command:             # 20 минут - не предел.
     cmd: "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
   when: not dh_key_done.stat.exists
 
+# И ещё раз дёргаем сервис nginx'а
+- name: "Flush handlers"
+  become: true
+  ansible.builtin.meta:
+    flush_handlers
+
 # Открываем дырки в фаерволе для местных (зона "home")
 # и публичных (зона "public") сервисов
 - name: "Allow HTTP on firewall"
   become: true
   ansible.posix.firewalld:
+    zone: "public"
     service: http
     permanent: true
     state: enabled
@@ -165,6 +172,7 @@
 - name: "Allow HTTPS on firewall"
   become: true
   ansible.posix.firewalld:
+    zone: "public"
     service: https
     permanent: true
     state: enabled

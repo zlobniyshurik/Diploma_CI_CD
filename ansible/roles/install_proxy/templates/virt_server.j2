@@ -19,7 +19,7 @@ server {
 		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}/{{ proxy_my_domain_tld }}.key;
 
 		# Указываем пути к ECC-сертификатам
-		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc//fullchain_ecc.pem;
+		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/fullchain_ecc.pem;
 		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/{{ proxy_my_domain_tld }}_ecc.key;
 
 		ssl_session_timeout 1d;
@@ -72,6 +72,6 @@ server {
 
 			proxy_set_header Host $host;
 
-			proxy_pass https://{{ item.value.proxy_pass }}$request_uri;
+			proxy_pass http://{{ item.value.proxy_pass }}$request_uri;
 		}
 	}
