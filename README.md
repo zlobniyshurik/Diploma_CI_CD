@@ -115,6 +115,14 @@ stream {
           }
 }
 ```
+---
+Итого, реверс-прокси для для обращения **`HTTP`**/**`HTTPS`** работает...  
+*пример обращения к* ***diplomshurika.ru***  
+![https://diplomshurika.ru](./pic/diplom_3_1.png)
+
+*пример обращения к* ***grafana.diplomshurika.ru***  
+![https://grafana.diplomshurika.ru](./pic/diplom_3_2.png)
+
 
 ---
 ## Этап 3½ *(JumpHost и прокси)*
