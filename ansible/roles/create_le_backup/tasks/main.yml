@@ -5,6 +5,8 @@
   ansible.builtin.archive:
     path: "{{ create_le_backup_src }}/acme.config"
     dest: "/tmp/lebackup_conf.tar.gz"
+    owner: root
+    mode: "0600"
 
 # Создаём архив с сертификатами
 - name: "Create archive for certs"
@@ -12,6 +14,8 @@
   ansible.builtin.archive:
     path: "{{ create_le_backup_src }}/certs"
     dest: "/tmp/lebackup_certs.tar.gz"
+    owner: root
+    mode: "0600"
 
 # Выкачиваем acme.conf архив на локальную машину
 - name: "Download 'acme.conf' archive to local machine"

@@ -61,9 +61,8 @@
   ansible.builtin.include_role:
     name: restore_le_backup
   vars:
-    restore_le_backup_src: "./LEbackup/{{ tf_proxy_name }}"
+    restore_le_backup_src: "./LEbackup"
     restore_le_backup_dest: "/opt/LEscript"
-    restore_le_backup_domain: "{{ proxy_my_domain_tld }}"
 
 # Проверяем - а надо ли устанавливать скрипт получения сертификатов?
 - name: "Check if catalog '/opt/LEscript/acme.sh' already exists"
@@ -92,28 +91,28 @@
 # Проверяем - а нет ли уже у нас сертификатов?
 - name: "Check if certs already got"
   ansible.builtin.stat:
-    paths: "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/ca.cer"
+    path: "/opt/LEscript/certs/{{ proxy_my_domain_tld }}/ca.cer"
   register: get_cert_done
 
 # Таки получаем сертификаты
 - name: "Get certs"
   ansible.builtin.command:
     cmd: "/opt/LEscript/get_cert.sh"
-  when: not get_cert_done.exists
+  when: not get_cert_done.stat.exists
   notify: "Reload nginx service"
 
 # Если аккаунт на Let'Encrypt уже зарегистрирован,
 # если сертификаты таки успешно получены, то
 # грех их не забэкапить локально для ускорения
 # следующего запуска и избежания бана на LE из-за
-# слишком частых обращений
+# слишком частых перерегистраций аккаунта и постоянных
+# перевыпусков сертификатов с нуля
 - name: "Backup LE account settings and HTTPS-certs"
   ansible.builtin.include_role:
     name: create_le_backup
   vars:
     create_le_backup_src: "/opt/LEscript"
-    create_le_backup_dest: "./LEbackup/{{ tf_proxy_name }}"
-    create_le_backup_domain: "{{ proxy_my_domain_tld }}"
+    create_le_backup_dest: "./LEbackup"
 
 # Создаём по папке на каждый сервер
 - name: "Create log folders for nginx"

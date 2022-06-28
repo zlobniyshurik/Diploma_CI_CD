@@ -22,4 +22,3 @@
     - name: "We have no backup of certificates yet :( "
       ansible.builtin.debug:
         msg: "We have no backup of certificates yet :( "
-
