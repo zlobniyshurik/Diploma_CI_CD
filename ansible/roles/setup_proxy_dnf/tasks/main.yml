@@ -11,7 +11,7 @@
   become: true
   ansible.builtin.template:
     backup: true
-    src: dnf.j2
+    src: "templates/dnf.j2"
     dest: "/etc/dnf/dnf.conf"
     owner: "root"
     group: "root"
@@ -23,7 +23,7 @@
   become: true
   ansible.builtin.template:
     backup: true
-    src: set_proxy.sh.j2
+    src: "templates/set_proxy.sh.j2"
     dest: "/etc/profile.d/set_proxy.sh"
     owner: "root"
     group: "root"

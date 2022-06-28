@@ -19,8 +19,8 @@ server {
 		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}/{{ proxy_my_domain_tld }}.key;
 
 		# Указываем пути к ECC-сертификатам
-		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/fullchain_ecc.pem;
-		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/{{ proxy_my_domain_tld }}_ecc.key;
+		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/fullchain.cer;
+		ssl_certificate_key /opt/LEscript/certs/{{ proxy_my_domain_tld }}_ecc/{{ proxy_my_domain_tld }}.key;
 
 		ssl_session_timeout 1d;
 		ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
