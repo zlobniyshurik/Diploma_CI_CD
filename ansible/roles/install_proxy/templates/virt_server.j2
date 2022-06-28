@@ -5,7 +5,7 @@ server {
 		server_name {{ item.value.server_string }};
 
                 #Задаем пути к файлам логов
-		access_log /var/log/nginx/{{ item.value.server_log_dir }}/access.log main if=$loggable;
+		access_log /var/log/nginx/{{ item.value.server_log_dir }}/access.log main;
 		error_log /var/log/nginx/{{ item.value.server_log_dir }}/error.log;
 
 		###########################

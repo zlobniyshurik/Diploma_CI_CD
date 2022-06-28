@@ -35,4 +35,4 @@ proxy_settings:
   gitlab:
     server_string: "gitlab.{{ proxy_my_domain_tld }}"
     server_log_dir: "gitlab"
-    proxy_pass: "gitlab.{{ proxy_my_domain_tld }}"
+    proxy_pass: "gitlab-int.{{ proxy_my_domain_tld }}"
