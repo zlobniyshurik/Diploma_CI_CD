@@ -9,6 +9,7 @@
     - role: setup_proxy_dnf
       vars:
         setup_proxy_fqdn: "{{ tf_proxy_name }}"
+        setup_proxy_port: "{{ tf_proxy_port }}"
 
 - name: "Install common tools"
   hosts: Pass2

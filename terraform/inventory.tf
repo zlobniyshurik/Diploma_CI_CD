@@ -4,6 +4,7 @@ resource "local_file" "inventory" {
     {
       tf_workspace     = "${terraform.workspace}"
       tf_my_domain_tld = "${var.my_domain_tld}"
+      tf_proxy_port    = "${var.proxy_port}"
       ssh_login_user   = "${var.login_name}"
       ssh_ansible_key  = "${var.ssh_privkey_path}"
       fqdn_proxy       = "${yandex_compute_instance.proxy.fqdn}"

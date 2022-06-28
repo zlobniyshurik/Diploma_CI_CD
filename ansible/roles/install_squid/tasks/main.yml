@@ -16,9 +16,9 @@
 # что всем можно качать всё
 - name: "Copy squid config (allow ALL)"
   become: true
-  ansible.builtin.copy:
-    src: "files/squid.conf"
-    dest: "/etc/squid"
+  ansible.builtin.template:
+    src: "templates/squid.conf.j2"
+    dest: "/etc/squid/squid.conf"
     owner: "root"
     group: "root"
     mode: "0644"

@@ -67,6 +67,13 @@ variable "proxy_name" {
   default     = "proxy"
 }
 
+# Squid port on proxy
+variable "proxy_port" {
+  description = "Squid port on proxy"
+  type        = string
+  default     = "3128"
+}
+
 # DB nodename prefix
 variable "db_name_prefix"  {
   description = "Database host name prefix"
@@ -92,7 +99,7 @@ variable "app_name" {
 variable "gitlab_name" {
   description = "GitLab host name"
   type        = string
-  default     = "gitlab"
+  default     = "gitlab-int"
 }
 
 # GitLab Runner nodename prefix
