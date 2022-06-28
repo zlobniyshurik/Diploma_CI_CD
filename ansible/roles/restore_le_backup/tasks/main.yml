@@ -1,58 +1,25 @@
 ---
-# Создаём структуру каталогов на удалённой машине
-- name: "Create local folders to backup"
-  become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: "root"
-    group: "root"
-    mode: "0777"
-  with_items:
-    - "{{ restore_le_backup_dest }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory"
-    - "{{ restore_le_backup_dest }}/certs/{{ restore_le_backup_domain }}"
-    - "{{ restore_le_backup_dest }}/certs/{{ restore_le_backup_domain }}_ecc"
+- name: "Restore Let's Encrypt account data from local backup to proxy"
+  block:
+    - name: "Try to restore acme.conf from local backup to proxy"
+      become: true
+      ansible.builtin.unarchive:
+        src: "{{ restore_le_backup_src }}/lebackup_conf.tar.gz"
+        dest: "{{ restore_le_backup_dest }}"
+  rescue:
+    - name: "We have no backup of acme.conf yet :("
+      ansible.builtin.debug:
+        msg: "We have no backup of acme.conf yet :("
 
-# Начинаем пофайлово выкачивать данные аккаунта Let's Encrypt
-- name: "Restore from backup account data (part1)"
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ restore_le_backup_dest }}/acme.config/"
-    owner: "root"
-    mode: "0666"
-  with_fileglob:
-    - "{{ restore_le_backup_src }}/acme.config/*"
+- name: "Restore Let's Encrypt certificates from local backup to proxy"
+  block:
+    - name: "Try to restore certificates from local backup to proxy"
+      become: true
+      ansible.builtin.unarchive:
+        src: "{{ restore_le_backup_src }}/lebackup_certs.tar.gz"
+        dest: "{{ restore_le_backup_dest }}"
+  rescue:
+    - name: "We have no backup of certificates yet :( "
+      ansible.builtin.debug:
+        msg: "We have no backup of certificates yet :( "
 
-# Продолжаем пофайлово выкачивать данные аккаунта Let's Encrypt
-- name: "Restore from backup account data (part2)"
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ restore_le_backup_dest }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory/"
-    owner: "root"
-    mode: "0666"
-  with_fileglob:
-    - "{{ restore_le_backup_src }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory/*"
-
-# Закачиваем классические RSA-сертификаты
-- name: "Restore from backup classic HTTPS-certs"
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ restore_le_backup_dest }}/certs/{{ restore_le_backup_domain }}/"
-    owner: "root"
-    mode: "0666"
-  with_fileglob:
-    - "{{ restore_le_backup_src }}/certs/{{ restore_le_backup_domain }}/*"
-
-# Закачиваем эллиптичексие сертификаты
-- name: "Restore flom backup elliptic HTTPS-certs"
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ restore_le_backup_dest }}/certs/{{ restore_le_backup_domain }}_ecc/"
-    owner: "root"
-    mode: "0666"
-  with_fileglob:
-    - "{{ restore_le_backup_src }}/certs/{{ restore_le_backup_domain }}_ecc/*"

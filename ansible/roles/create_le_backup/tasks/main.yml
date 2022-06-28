@@ -1,85 +1,34 @@
 ---
-# Создаём структуру каталогов на локальном диске
-- name: "Create local folders to backup"
-  delegate_to: localhost
+# Создаём архив аккаунта на Let's Encrypt
+- name: "Create archive for acme.conf"
   become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: "root"
-    group: "root"
-    mode: "0777"
-  with_items:
-    - "{{ create_le_backup_dest }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory"
-    - "{{ create_le_backup_dest }}/certs/{{ create_le_backup_domain }}"
-    - "{{ create_le_backup_dest }}/certs/{{ create_le_backup_domain }}_ecc"
+  ansible.builtin.archive:
+    path: "{{ create_le_backup_src }}/acme.config"
+    dest: "/tmp/lebackup_conf.tar.gz"
 
-# Плохой, плохой Ansible!
-# Не умеет пачку файлов выкачивать с удалённой машины,
-# молчу уж об содержимом подкаталогов.
-# Ещё немного и я бы подумал о создании архива на удалённой машине,
-# но это неспортивно.
+# Создаём архив с сертификатами
+- name: "Create archive for certs"
+  become: true
+  ansible.builtin.archive:
+    path: "{{ create_le_backup_src }}/certs"
+    dest: "/tmp/lebackup_certs.tar.gz"
 
-# Начинаем пофайлово выкачивать данные аккаунта Let's Encrypt
-- name: "Backup account data part1"
+# Выкачиваем acme.conf архив на локальную машину
+- name: "Download 'acme.conf' archive to local machine"
   become: true
   ansible.builtin.fetch:
     flat: true
-    src: "{{ item }}"
-    dest: "{{ create_le_backup_dest }}/acme.config/"
-    owner: "root"
-    mode: "0666"
-  with_items:
-    - "{{ create_le_backup_src }}/acme.config/account.conf"
-    - "{{ create_le_backup_src }}/acme.config/http.header"
-    - "{{ create_le_backup_src }}/acme.config/myaccount.conf"
-    - "{{ create_le_backup_src }}/acme.config/myaccount.key"
-
-# Продолжаем пофайлово выкачивать данные аккаунта Let's Encrypt
-- name: "Backup account data part2"
-  become: true
-  ansible.builtin.fetch:
-    flat: true
-    src: "{{ item }}"
-    dest: "{{ create_le_backup_dest }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory/"
-    owner: "root"
-    mode: "0666"
-  with_items:
-    - "{{ create_le_backup_src }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory/account.json"
-    - "{{ create_le_backup_src }}/acme.config/ca/acme-v02.api.letsencrypt.org/directory/ca.conf"
-
-# Выкачиваем классические RSA-сертификаты
-- name: "Backup classic HTTPS-certs"
-  become: true
-  ansible.builtin.fetch:
-    flat: true
-    src: "{{ item }}"
-    dest: "{{ create_le_backup_dest }}/certs/{{ create_le_backup_domain }}/"
+    src: "/tmp/lebackup_conf.tar.gz"
+    dest: "{{ create_le_backup_dest }}/lebackup_conf.tar.gz"
     owner: root
-    mode: "0666"
-  with_items:
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/{{ create_le_backup_domain }}.cer"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/{{ create_le_backup_domain }}.conf"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/{{ create_le_backup_domain }}.csr"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/{{ create_le_backup_domain }}.csr.conf"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/{{ create_le_backup_domain }}.key"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/ca.cer"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}/fullchain.cer"
+    mode: "0600"
 
-# Выкачиваем эллиптичексие сертификаты
-- name: "Backup elliptic HTTPS-certs"
+# Выкачиваем архив сертификатов на локальную машину
+- name: "Download certificates archive to local machine"
   become: true
   ansible.builtin.fetch:
     flat: true
-    src: "{{ item }}"
-    dest: "{{ create_le_backup_dest }}/certs/{{ create_le_backup_domain }}_ecc/"
+    src: "/tmp/lebackup_certs.tar.gz"
+    dest: "{{ create_le_backup_dest }}/lebackup_certs.tar.gz"
     owner: root
-    mode: "0666"
-  with_items:
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/{{ create_le_backup_domain }}.cer"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/{{ create_le_backup_domain }}.conf"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/{{ create_le_backup_domain }}.csr"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/{{ create_le_backup_domain }}.csr.conf"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/{{ create_le_backup_domain }}.key"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/ca.cer"
-    - "{{ create_le_backup_src }}/certs/{{ create_le_backup_domain }}_ecc/fullchain.cer"
+    mode: "0600"
