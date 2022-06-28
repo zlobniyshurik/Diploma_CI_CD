@@ -99,7 +99,7 @@ variable "app_name" {
 variable "gitlab_name" {
   description = "GitLab host name"
   type        = string
-  default     = "gitlab-int"
+  default     = "gitlab"
 }
 
 # GitLab Runner nodename prefix

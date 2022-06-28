@@ -4,9 +4,10 @@
 
 server {
     listen       80;
-    listen [::]:80;
+#    listen [::]:80;
 
-    server_name  {{ install_app_my_domain_tld }};
+    # Всё равно на этом сервере других сайтов кроме вордпресса нет
+    server_name  _;
     charset utf-8;
 
     access_log /var/log/nginx/{{ install_app_my_domain_tld }}/access.log;

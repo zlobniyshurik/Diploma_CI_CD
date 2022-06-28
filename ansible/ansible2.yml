@@ -48,10 +48,13 @@
     - role: install_app
       vars:
         install_app_my_domain_tld: "{{ tf_my_domain_tld }}"
-        install_app_db_host: "{{ db_master }}"
+        install_app_db_host: "{{ tf_db_master_ip }}"
         install_app_db_name: "wordpress"
         install_app_db_user: "wordpress"
         install_app_db_pass: "wordpress"
+  environment:
+    http_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
+    https_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
 
 # - name: "Install Gitlab-server"
 #  hosts: Applications

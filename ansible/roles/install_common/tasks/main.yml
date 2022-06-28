@@ -19,6 +19,8 @@
 
 # Устанавливаем маленькие, но полезные утилиты,
 # без которых часть ролей не работает
+# Последние две для облегчения отладки и русского
+# языка в консоли вместо кракозябр
 - name: "Install supplementary tools"
   become: true
   ansible.builtin.dnf:
@@ -29,6 +31,8 @@
       - unzip
       - python3-firewall
       - policycoreutils-python-utils
+      - glibc-all-langpacks
+      - mc
     state: present
 
 # Создаем локальную зону "home", куда пускают только

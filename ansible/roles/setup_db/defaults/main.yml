@@ -18,5 +18,8 @@ setup_db_name: "database"
 # Owner name of created DB
 setup_db_owner_user: "owner_name"
 
+# Owner IP or host
+setup_db_owner_host: "%"
+
 # Owner password
 setup_db_owner_pass: "owner_pass"

@@ -35,12 +35,16 @@ tf_workspace = "${tf_workspace}"
 tf_my_domain_tld = "${tf_my_domain_tld}"
 tf_proxy_name = "${fqdn_proxy}"
 tf_proxy_port = "${tf_proxy_port}"
+tf_app_server_ip = "${ip_app}"
+tf_gitlab_server_ip = "${ip_gitlab}"
+tf_monitoring_server_ip = "unknown yet"
+tf_db_master_ip = "${ip_db[0]}"
 
 [Pass2:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ${ssh_ansible_key} ${ssh_login_user}@${ip_proxy}"'
+db_master = "${fqdn_db[0]}"
 
 [Databases:vars]
-db_master = "${fqdn_db[0]}"
 
 [Applications:vars]
 
