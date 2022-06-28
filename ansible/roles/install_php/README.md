@@ -14,7 +14,7 @@
 | Имя переменной | Описание | Возможные значения | Значение по умолчанию |
 | :--- | :--------- | :--- | :--- |
 | **install_php_enabled** | Запускать ли сервис **php-fpm** после установки. | `true`/`false` | **`true`** |
-| **install_php_packages** | Список устанавливаемых пакетов PHP | Имя пакета **php** задаётся в виде<br> `"@php:{{ install_php_ver }}/common"`  | <ul><li>php</li><li>php-fpm</li><li>php-gd</li><li>php-mysqlnd</li><li>php-json</li><li>php-mbstring</li><li>php-pdo</li><li>php-pecl-zip</li><li>php-xml</li></ul>|
+| **install_php_packages** | Список устанавливаемых пакетов **PHP** | Имя пакета **php** задаётся в виде шаблона<br> **`"@php:{{ install_php_ver }}/common"`**<br> дабы была возможность выбора нужной версии **PHP** | <ul><li>php</li><li>php-fpm</li><li>php-gd</li><li>php-mysqlnd</li><li>php-json</li><li>php-mbstring</li><li>php-pdo</li><li>php-pecl-zip</li><li>php-xml</li></ul>|
 | **install_php_state** | Состояние сервиса **php-fpm** после установки | `started`/`reloaded`/`restarted`/`stopped` | **`started`** |
 | **install_php_ver** | Требуемая версия **PHP** | | **`8.0`** |
 
