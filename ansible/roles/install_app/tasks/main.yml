@@ -6,6 +6,16 @@
   vars:
     install_php_ver: "{{ install_app_php_ver }}"
 
+# Вырубаем проверку SElinux для httpd_t
+# Иначе не хочет WordPress с базами данных
+# общаться. И я не пойму - почему.
+# Чёртовы параноики!
+- name: "Disable SElinux for nginx"
+  become: true
+  ansible.builtin.command:
+    "semanage permissive -a httpd_t"
+  changed_when: false
+
 # Ставим nginx v 1.20
 - name: "Install nginx v1.20"
   ansible.builtin.include_role:

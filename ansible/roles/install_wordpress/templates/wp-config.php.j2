@@ -79,6 +79,16 @@ $table_prefix = 'wp_';
  * @link https://ru.wordpress.org/support/article/debugging-in-wordpress/
  */
 define( 'WP_DEBUG', false );
+/* Задействуем работу через локальный прокси */
+define('WP_PROXY_HOST', '{{ tf_proxy_name }}');
+define('WP_PROXY_PORT', '{{ tf_proxy_port }}');
+define('WP_PROXY_USERNAME', '');
+define('WP_PROXY_PASSWORD', '');
+define('WP_PROXY_BYPASS_HOSTS', 'localhost');
+/* Отключаем прибитый гвоздями HTTPS */
+define('FORCE_SSL_LOGIN', false);
+define('FORCE_SSL_ADMIN', false);
+$_SERVER['HTTPS'] = 'on';
 
 /* Произвольные значения добавляйте между этой строкой и надписью "дальше не редактируем". */
 
