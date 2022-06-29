@@ -56,14 +56,14 @@
     http_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
     https_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
 
-# - name: "Install Gitlab-server"
-#  hosts: Applications
-#  gather_facts: false
-#  become: true
-#  become_user: "root"
-#  remote_user: "cloud-user"
-#  roles:
-#    - role: install_gitlab
+- name: "Install Gitlab-server"
+  hosts: GitLabSrv
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_gitlab
 
 # - name: "Install Gitlab-runner"
 #  hosts: Applications

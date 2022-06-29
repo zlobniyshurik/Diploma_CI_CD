@@ -1,0 +1,18 @@
+---
+# GitLab root password after install
+install_gitlab_root_pass: "GitLab#r00tPa$$"
+
+# If true, postfix will be installed before GitLab
+install_gitlab_postfix_install: true
+
+# If true, postfix service will be enabled permanently
+install_gitlab_postfix_enabled: true
+
+# Postfix state after install (started/stopped/reloaded/restarted)
+install_gitlab_postfix_state: "started"
+
+# URL on which GitLab will be reachable
+install_gitlab_external_url: "http://gitlab.example.com"
+
+# Reverse proxy IP, if exists
+install_gitlab_proxy_ip: ""

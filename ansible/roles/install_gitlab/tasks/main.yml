@@ -1,0 +1,70 @@
+---
+# Ставим необходимые для GitLab'а зависимости
+- name: "Install GitLab dependencies"
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - curl
+      - policycoreutils
+      - perl
+    state: "present"
+
+# Даём в фаерволе доступ по HTTP
+- name: "Allow HTTP in firewall for local network (zone 'home')"
+  become: true
+  ansible.posix.firewalld:
+    zone: "home"
+    service: "http"
+    state: "enabled"
+    immediate: true
+    permanent: true
+
+# Ставим, если необходимо, postfix
+# Он нужен для отправки писем, если нет других почтовиков.
+- name: "Install Postfix"
+  become: true
+  ansible.builtin.dnf:
+    name: "postfix"
+    state: "present"
+  notify: "Start Postfix"
+  when: install_gitlab_postfix_install
+
+# Запускаем постфикс, пока не забыли
+- name: "Flush handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+# Настраиваем GitLab'овский репозиторий
+- name: "Setup GitLab repo"
+  become: true
+  ansible.builtin.copy:
+    src: "files/gitlab_gitlab-ee.repo"
+    dest: "/etc/yum.repos.d/"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+# Ставим сам GitLab (пока без настроек)
+- name: "Install GitLab"
+  become: true
+  ansible.builtin.dnf:
+    name: "gitlab-ee"
+    state: "present"
+  notify: "Reconfigure GitLab"
+
+# Копируем настройки (имя сайта, пароль root, e.t.c.)
+- name: "Copy GitLab settings"
+  become: true
+  ansible.builtin.template:
+    backup: true
+    src: "templates/gitlab.rb.j2"
+    dest: "/etc/gitlab/gitlab.rb"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Reconfigure GitLab"
+
+# Запускаем первичную конфигурацию GitLab'а
+- name: "Reconfigure GitLab (flush handlers)"
+  ansible.builtin.meta:
+    flush_handlers

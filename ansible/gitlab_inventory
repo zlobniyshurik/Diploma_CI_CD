@@ -1,0 +1,2 @@
+[Test]
+test ansible_host=test.bfg-10k.ru ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"

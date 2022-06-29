@@ -1,0 +1,14 @@
+---
+- name: "Test_install_gitlab"
+  hosts: Test
+  gather_facts: true
+  become: true
+  become_user: "root"
+  remote_user: "root"
+  roles:
+    - role: install_common
+    - role: install_gitlab
+      vars:
+        install_gitlab_root_pass: "TestRootPass"
+        install_gitlab_external_url: "http://test.bfg-10k.ru"
+        

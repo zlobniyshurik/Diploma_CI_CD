@@ -8,3 +8,6 @@
   - `unzip`
   - `python3-firewall`
   - `policycoreutils-python-utils`
+
+## Примечание
+Для корректной работы роли требуется **`gather_facts`** выставить в **`true`**

@@ -10,7 +10,7 @@ resource "yandex_compute_instance" "proxy" {
   # Увеличиваем тайм-ауты на создание виртуалки - в ЯОблаке она
   # иногда создаётся крайне медленно, вплоть до вылета.
   timeouts {
-    create = "5m"
+    create = "10m"
     update = "7m"
     delete = "5m"
   }
@@ -28,7 +28,7 @@ resource "yandex_compute_instance" "proxy" {
       image_id    = var.boot_disk_image_id
       name        = "root-${var.proxy_name}"
       type        = "network-hdd"
-      size        = "10"
+      size        = "8"
     }
   }
 
