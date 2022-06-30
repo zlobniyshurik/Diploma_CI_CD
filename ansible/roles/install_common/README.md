@@ -9,5 +9,8 @@
   - `python3-firewall`
   - `policycoreutils-python-utils`
 
+# Переменные
+Отсутствуют
+
 ## Примечание
 Для корректной работы роли требуется **`gather_facts`** выставить в **`true`**

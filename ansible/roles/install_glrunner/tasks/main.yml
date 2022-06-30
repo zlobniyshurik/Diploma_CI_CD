@@ -1,0 +1,17 @@
+---
+# Настраиваем Runner'овский репозиторий
+- name: "Setup GitLab Runner repo"
+  become: true
+  ansible.builtin.copy:
+    src: "files/runner_gitlab-runner.repo"
+    dest: "/etc/yum.repos.d/"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+# Ставим GitLab Runner
+- name: "Install GitLab Runner"
+  become: true
+  ansible.builtin.dnf:
+    name: "gitlab-runner"
+    state: "present"

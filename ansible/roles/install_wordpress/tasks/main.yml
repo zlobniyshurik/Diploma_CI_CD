@@ -20,7 +20,7 @@
     dest: "{{ install_wordpress_dir }}"
     owner: "{{ install_wordpress_www_user }}"
     group: "{{ install_wordpress_www_group }}"
-    mode: "0666"
+    mode: "0644"
   environment:
     http_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
     https_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
@@ -33,7 +33,7 @@
     state: directory
     owner: "{{ install_wordpress_www_user }}"
     group: "{{ install_wordpress_www_group }}"
-    mode: "0777"
+    mode: "0755"
     recurse: true
 
 # Генерируем 8 рандомных строчек, что нужны для "подсаливания"
@@ -57,4 +57,4 @@
     dest: "{{ install_wordpress_dir }}/wordpress/wp-config.php"
     owner: "{{ install_wordpress_www_user }}"
     group: "{{ install_wordpress_www_group }}"
-    mode: "0666"
+    mode: "0644"
