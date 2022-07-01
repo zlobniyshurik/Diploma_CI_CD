@@ -1,0 +1,44 @@
+---
+- name: "Reconfigure DNF to use proxy"
+  hosts: Pass3
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: setup_proxy_dnf
+      vars:
+        setup_proxy_fqdn: "{{ tf_proxy_name }}"
+        setup_proxy_port: "{{ tf_proxy_port }}"
+
+- name: "Install common tools"
+  hosts: Pass3
+  gather_facts: true
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_common
+
+- name: "Install Gitlab-server"
+  hosts: GitLabSrv
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_gitlab
+      vars:
+        install_gitlab_root_pass: "{{ tf_gitlab_root_pass }}"
+        install_gitlab_external_url: "https://{{ tf_gitlab_fqdn }}"
+        install_gitlab_proxy_url: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
+        install_gitlab_proxy_internal_ip: "{{ tf_proxy_internal_ip }}"
+
+- name: "Install Gitlab-runner"
+  hosts: Runners
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_glrunner

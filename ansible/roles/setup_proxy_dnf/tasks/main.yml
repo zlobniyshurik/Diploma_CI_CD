@@ -17,6 +17,17 @@
     group: "root"
     mode: "0644"
 
+# Заставляем wget работать через прокси
+- name: "Replace wget-config"
+  become: true
+  ansible.builtin.template:
+    backup: true
+    src: "templates/wgetrc.j2"
+    dest: "/etc/wgetrc"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
 # Задаём в глообальных системных установках
 # использовать прокси
 - name: "Set global system proxy settings"

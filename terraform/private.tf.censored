@@ -2,54 +2,63 @@
 # General settings for Yandex provider #
 ########################################
 
+# Токен Yandex
 variable "ya_token" {
   description = "Yandex token"
   type        = string
-  default     = "<Яндекс токен>"
+  default     = "<censored>"
   sensitive   = true
 }
 
+# ID ЯОблака
 variable "ya_cloud_id" {
   description = "Yandex cloud_id"
   type        = string
-  default     = "<Яндекс cloud_id>"
+  default     = "<censored>"
   sensitive   = true
 }
 
+# ID папки ЯОблака
 variable "ya_folder_id" {
   description = "Yandex folder_id"
   type        = string
-  default     = "<Яндекс folder_id>"
+  default     = "<censored>"
   sensitive   = true
 }
 
+# Геозона ЯОблака
 variable "ya_zone" {
   description = "Yandex geozone"
   type        = string
-  default     = "ru-central1-a"
+  default     = "<censored>"
 }
 
-###############################
-# Key for he.net DNS provider #
-###############################
+####################################
+# Settings for he.net DNS provider #
+####################################
+
+# Индивидуальный ключ DNS-провайдера
+# для обновления A-записи в конкретной доменной зоне
 variable "he_net_key" {
   description = "Key for change A-record in mydomain.tld zone"
   type        = string
-  default     = "<token_for_A_record_from_zone_mydomain.tld_from_dns.he.net>"
+  default     = "<censored>"
   sensitive   = true
 }
 
+# Логин для доступа в админку на he.net
 variable "he_net_login" {
-  description = "Login for dns.he.net"
+  description = "Login for he.net"
   type        = string
-  default     = "<Login_for_dns.he.net>"
+  default     = "<censored>"
   sensitive   = true
 }
 
+# Пароль для доступа в админку на he.net
 variable "he_net_pass" {
-  description = "Password for dns.he.net"
+  description = "Password for he.net"
   type        = string
-  default     = "<Password_for_dns.he.net>"
+  default     = "<censored>"
   sensitive   = true
 }
 
@@ -57,9 +66,23 @@ variable "he_net_pass" {
 # Settings for Let's Encrypt #
 ##############################
 
+# Почта, на которую Let's Encrypt
+# шлёт различную служебную информацию
 variable "cert_admin_mail" {
   description = "Admin mail for domain owner"
   type        = string
-  default     = "<adminmail@somedomain.tld>"
+  default     = "<censored>"
+  sensitive   = true
+}
+
+#############################
+# Settings for local GitLab #
+#############################
+
+# Пароль root-учётки для локального GitLab'а
+variable "gitlab_root_pass" {
+  description = "Password for 'root' account of local GitLab installation"
+  type        = string
+  default     = "<censored>"
   sensitive   = true
 }

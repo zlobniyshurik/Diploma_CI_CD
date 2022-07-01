@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+export proxy_http={{ install_gitlab_proxy_url }}
+export proxy_https={{ install_gitlab_proxy_url }}
+
+cd /opt
+wget https://www.bfg-10k.ru/MyRepo/OtherStuff/GitLab.splitted/gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm.partaa
+wget https://www.bfg-10k.ru/MyRepo/OtherStuff/GitLab.splitted/gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm.partab
+
+cat gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm.parta* >gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm
+
+rm -f gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm.parta*
+exit 0

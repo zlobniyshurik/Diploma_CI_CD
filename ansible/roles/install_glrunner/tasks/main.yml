@@ -3,8 +3,8 @@
 - name: "Setup GitLab Runner repo"
   become: true
   ansible.builtin.copy:
-    src: "files/runner_gitlab-runner.repo"
-    dest: "/etc/yum.repos.d/"
+    src: "files/myrepo.repo"
+    dest: "/etc/yum.repos.d/myrepo.repo"
     owner: "root"
     group: "root"
     mode: "0644"

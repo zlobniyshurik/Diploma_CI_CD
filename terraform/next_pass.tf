@@ -26,7 +26,7 @@ resource "null_resource" "run_ansible1" {
 }
 
 # Запускаем вторую фазу развёртывания Ansible-скрипта:
-# Заливаем ноды с "серыми" IP.
+# Заливаем ноды базы данных и сервер приложений
 resource "null_resource" "run_ansible2" {
   provisioner "local-exec" {
     command = "ANSIBLE_FORCE_COLOR=1 ansible-playbook -T 30 -i ../ansible/inventory ../ansible/ansible2.yml"
@@ -34,5 +34,17 @@ resource "null_resource" "run_ansible2" {
 
   depends_on = [
     null_resource.run_ansible1
+  ]
+}
+
+# Запускаем третью фазу развёртывания Ansible-скрипта:
+# Заливаем GitLab и его раннеры
+resource "null_resource" "run_ansible3" {
+  provisioner "local-exec" {
+    command = "ANSIBLE_FORCE_COLOR=1 ansible-playbook -T 30 -i ../ansible/inventory ../ansible/ansible3.yml"
+  }
+
+  depends_on = [
+    null_resource.run_ansible2
   ]
 }

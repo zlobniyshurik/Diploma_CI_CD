@@ -34,22 +34,40 @@
   ansible.builtin.meta:
     flush_handlers
 
-# Настраиваем GitLab'овский репозиторий
-- name: "Setup GitLab repo"
+# Мерзкое ЯОблако рвёт соединения при скачке более
+# гигабайта за раз. Будем качать частями при помощи
+# спец. скрипта.
+
+# Качаем скрипт
+- name: "Copy GitLab rpm downloader"
   become: true
-  ansible.builtin.copy:
-    src: "files/gitlab_gitlab-ee.repo"
-    dest: "/etc/yum.repos.d/"
+  ansible.builtin.template:
+    src: "templates/gl_download.sh.j2"
+    dest: "/opt/gl_download.sh"
     owner: "root"
     group: "root"
-    mode: "0644"
+    mode: "0755"
+
+# Проверяем - а надо ли нам вообще что-то качать?
+- name: "Check if GitLab rpm already exists"
+  ansible.builtin.stat:
+    path: "/opt/gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm"
+  register: rpm_exists
+
+# Запускаем скрипт, если rpm ещё не скачен
+- name: "Run GitLab rpm downloader"
+  become: true
+  ansible.builtin.command:
+    cmd: "/opt/gl_download.sh"
+  when: not rpm_exists.stat.exists
 
 # Ставим сам GitLab (пока без настроек)
 - name: "Install GitLab"
   become: true
   ansible.builtin.dnf:
-    name: "gitlab-ee"
+    name: "/opt/gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm"
     state: "present"
+    disable_gpg_check: true
   notify: "Reconfigure GitLab"
 
 # Копируем настройки (имя сайта, пароль root, e.t.c.)

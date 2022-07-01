@@ -15,20 +15,22 @@ resource "yandex_compute_instance" "proxy" {
     delete = "5m"
   }
 
-  # В режиме 'stage' создаём виртуалку с 1Gb RAM и производительностью ядер 20%,
-  # В противном случае выделяем 2Gb RAM и производительностью 50%
+  # В режиме 'stage' создаём виртуалку с 2 Gb RAM и производительностью ядер 100%,
+  # В противном случае выделяем 2Gb RAM и производительностью 100%
+  # А в чём разница?  А нет её, иначе на этом тормозе невозможно гигабайт гитлабовского
+  # дистрибутива выкачать.
   resources {
     cores  = 2
-    memory = (terraform.workspace == "stage") ? 1 : 2
-    core_fraction = (terraform.workspace == "stage") ? 20 : 50
+    memory = (terraform.workspace == "stage") ? 2 : 2
+    core_fraction = (terraform.workspace == "stage") ? 100 : 100
   }
 
   boot_disk {
     initialize_params {
       image_id    = var.boot_disk_image_id
       name        = "root-${var.proxy_name}"
-      type        = "network-hdd"
-      size        = "8"
+      type        = "network-ssd"
+      size        = "10"
     }
   }
 

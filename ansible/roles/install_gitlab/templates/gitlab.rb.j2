@@ -202,7 +202,7 @@ external_url '{{ install_gitlab_external_url }}'
 ###! **Add the IP address for your reverse proxy to the list, otherwise users
 ###!   will appear signed in from that address.**
 # gitlab_rails['trusted_proxies'] = []
-gitlab_rails['trusted_proxies'] = [{{ install_gitlab_proxy_ip }}]
+gitlab_rails['trusted_proxies'] = [{{ install_gitlab_proxy_internal_ip }}]
 
 ### Content Security Policy
 ####! Customize if you want to enable the Content-Security-Policy header, which

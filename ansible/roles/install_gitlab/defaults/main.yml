@@ -14,5 +14,8 @@ install_gitlab_postfix_state: "started"
 # URL on which GitLab will be reachable
 install_gitlab_external_url: "http://gitlab.example.com"
 
-# Reverse proxy IP, if exists
-install_gitlab_proxy_ip: ""
+# Reverse proxy internal IP, if exists
+install_gitlab_proxy_internal_ip: ""
+
+# Reverse proxy port, if exists
+install_gitlab_proxy_url: ""

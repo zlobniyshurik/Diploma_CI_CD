@@ -13,19 +13,20 @@ resource "yandex_compute_instance" "gitlab" {
     delete = "5m"
   }
 
-  # В режиме 'stage' создаём виртуалку с 2ядрами, 3 Gb RAM и производительностью ядер 20%,
-  # В противном случае выделяем 4ядра, 4Gb RAM и производительностью 50%
+  # В режиме 'stage' создаём виртуалку с 2ядрами, 4 Gb RAM и производительностью ядер 100%,
+  # В противном случае выделяем 4ядра, 4Gb RAM и производительностью 100%
+  # И то не факт, что оно таки сможет выкачать гигабайт GitLab'а
   resources {
     cores  = (terraform.workspace == "stage") ? 2 : 4
-    memory = (terraform.workspace == "stage") ? 3 : 4
-    core_fraction = (terraform.workspace == "stage") ? 20 : 50
+    memory = (terraform.workspace == "stage") ? 4 : 4
+    core_fraction = (terraform.workspace == "stage") ? 100 : 100
   }
 
   boot_disk {
     initialize_params {
       image_id    = var.boot_disk_image_id
       name        = "root-${var.gitlab_name}"
-      type        = "network-hdd"
+      type        = "network-ssd"
       size        = "12"
     }
   }

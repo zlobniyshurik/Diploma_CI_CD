@@ -1,0 +1,6 @@
+[myrepo]
+name=myrepo
+baseurl=https://www.bfg-10k.ru/MyRepo
+repo_gpgcheck=0
+gpgcheck=0
+enabled=1
