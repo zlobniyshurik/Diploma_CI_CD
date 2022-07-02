@@ -34,7 +34,7 @@
   become: true
   ansible.posix.firewalld:
     zone: "home"
-    service: "squid"
+    port: "{{ install_squid_proxy_port }}/tcp"
     state: "enabled"
     permanent: true
     immediate: true
