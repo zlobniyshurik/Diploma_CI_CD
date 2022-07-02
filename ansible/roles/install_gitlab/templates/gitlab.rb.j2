@@ -202,6 +202,7 @@ external_url '{{ install_gitlab_external_url }}'
 ###! **Add the IP address for your reverse proxy to the list, otherwise users
 ###!   will appear signed in from that address.**
 # gitlab_rails['trusted_proxies'] = []
+gitlab_rails['trusted_proxies'] = [{{ install_gitlab_proxy_internal_ip }}]
 
 ### Content Security Policy
 ####! Customize if you want to enable the Content-Security-Policy header, which
@@ -2461,7 +2462,6 @@ gitlab_rails['initial_root_password'] = "{{ install_gitlab_root_pass }}"
 # Let's Encrypt integration
 ################################################################################
 # letsencrypt['enable'] = nil
-letsencrypt['enable'] = {{ install_gitlab_le_enabled }}
 # letsencrypt['contact_emails'] = [] # This should be an array of email addresses to add as contacts
 # letsencrypt['group'] = 'root'
 # letsencrypt['key_size'] = 2048
