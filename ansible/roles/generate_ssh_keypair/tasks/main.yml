@@ -1,0 +1,23 @@
+---
+# Чисто для информации
+- name: "Settings"
+  ansible.builtin.debug:
+    msg: [
+      "Catalog: '{{ generate_ssh_keypair_dir }}' ",
+      "Filenames: '{{ generate_ssh_keypair_filename }}' & '{{ generate_ssh_keypair_filename }}.pub' ",
+      "Algorhitm: {{ generate_ssh_keypair_algo }} ",
+      "Strength (bits): {{ generate_ssh_keypair_bit_size }} ",
+      "Comment: {{ generate_ssh_keypair_comment }} "
+    ]
+
+# Проверяем, а не создавали ли мы эти ключики раньше?
+- name: "Quick check if keys already generated"
+  ansible.builtin.stat:
+    path: "{{ generate_ssh_keypair_dir }}/{{ generate_ssh_keypair_filename }}"
+  register: key_done
+
+# Если не создавали - создаём сладкую парочку
+- name: "Generate keypair"
+  ansible.builtin.command:
+    cmd: ssh-keygen -t {{ generate_ssh_keypair_algo }} -b {{ generate_ssh_keypair_bit_size }} -f '{{ generate_ssh_keypair_dir }}/{{ generate_ssh_keypair_filename }}' -C '{{ generate_ssh_keypair_comment }}' -q -N ''
+  when: not key_done.stat.exists

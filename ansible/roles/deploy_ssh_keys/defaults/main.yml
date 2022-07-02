@@ -1,0 +1,15 @@
+---
+# Local catalog with private SSH-key
+deploy_ssh_keys_priv_dir: "/opt"
+
+# Name of private key
+deploy_ssh_keys_priv_key: "secret"
+
+# Name of trusted domain
+# Connects to hosts in trusted domain will
+# be accepted without strict key checking
+deploy_ssh_keys_trusted_domain: "example.com"
+
+
+
+
