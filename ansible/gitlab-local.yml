@@ -1,56 +1,23 @@
 ---
-- name: "Generate SSH keypair"
-  hosts: localhost
-  gather_facts: false
-  become: true
-  become_user: "root"
-  remote_user: "root"
-  roles:
-    - role: generate_ssh_keypair
-      vars:
-        generate_ssh_keypair_algo: "ed25519"
-        generate_ssh_keypair_bit_size: "4096"
-        generate_ssh_keypair_dir: "./ssh"
-        generate_ssh_keypair_filename: "exchange"
-        generate_ssh_keypair_comment: "root_test@bfg-10k.ru"
-
-- name: "Install squid for GitLab on Test2"
-  hosts: Test2
-  gather_facts: true
-  become: true
-  become_user: "root"
-  remote_user: "root"
-  roles:
-    - role: deploy_ssh_keys
-      vars:
-        deploy_ssh_keys_priv_dir: "./ssh"
-        deploy_ssh_keys_priv_key: "exchange"
-        deploy_ssh_keys_trusted_domain: "bfg-10k.ru"
-    - role: install_common
-    - role: install_squid
-
-- name: "Test_install_gitlab on Test"
+- name: "Test_install_gitlab"
   hosts: Test
   gather_facts: true
   become: true
   become_user: "root"
   remote_user: "root"
   roles:
-    - role: deploy_ssh_keys
-      vars:
-        deploy_ssh_keys_priv_dir: "./ssh"
-        deploy_ssh_keys_priv_key: "exchange"
-        deploy_ssh_keys_trusted_domain: "bfg-10k.ru"
-    - role: setup_proxy_dnf
-      vars:
-        setup_proxy_fqdn: "test2.bfg-10k.ru"
-        setup_proxy_protocol: "http://"
-        setup_proxy_port: "3128"
     - role: install_common
     - role: install_gitlab
       vars:
         install_gitlab_root_pass: "TestRootPass"
-        install_gitlab_external_url: "https://gltest.bfg-10k.ru"
-        install_gitlab_root_pass: "DukeNukemMustDie!!!"
-        install_gitlab_proxy_internal_ip: "192.168.1.98"
-        install_gitlab_proxy_url: "http://test2.bfg-10k.ru:3128"
+        install_gitlab_external_url: "http://test.bfg-10k.ru"
+
+- name: "Test_install_gitlab"
+  hosts: Test2
+  gather_facts: true
+  become: true
+  become_user: "root"
+  remote_user: "root"
+  roles:
+    - role: install_common
+    - role: install_glrunner

@@ -3,7 +3,7 @@
   ansible.builtin.debug:
     msg: [
       "Proxy will be configured with next settings:",
-      "{{ setup_proxy_protocol }}{{ setup_proxy_fqdn }}:{{ setup_proxy_port }}"
+      "{{ setup_proxy_protocol }}{{ setup_proxy_name }}:{{ setup_proxy_port }}"
     ]
 
 # Заставляем dnf работать через прокси
