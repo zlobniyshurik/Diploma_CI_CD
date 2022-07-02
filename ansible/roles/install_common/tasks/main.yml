@@ -31,6 +31,7 @@
       - unzip
       - python3-firewall
       - policycoreutils-python-utils
+      - rsync
       - glibc-all-langpacks
       - mc
     state: present

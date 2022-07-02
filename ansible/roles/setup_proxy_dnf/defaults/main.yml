@@ -1,6 +1,6 @@
 ---
 # Proxy fqdn or IP
-setup_proxy_name: "proxy.example.com"
+setup_proxy_fqdn: "proxy.example.com"
 
 # Proxy protocol e.g. "http://"
 setup_proxy_protocol: "http://"

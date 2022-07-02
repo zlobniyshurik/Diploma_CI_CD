@@ -27,7 +27,7 @@ resource "yandex_compute_instance" "gitlab" {
       image_id    = var.boot_disk_image_id
       name        = "root-${var.gitlab_name}"
       type        = "network-ssd"
-      size        = "12"
+      size        = "15"
     }
   }
 

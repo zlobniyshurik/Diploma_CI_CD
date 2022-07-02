@@ -1,0 +1,18 @@
+---
+# !!!Warning!!!
+# Passwordless keypair wil be generated!
+
+# Algorhitm (dsa | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa)
+generate_ssh_keypair_algo: "ed25519"
+
+# Strength in bits
+generate_ssh_keypair_bit_size: "4096"
+
+# Name for keys
+generate_ssh_keypair_filename: "secret"
+
+# Catalog for generated keys
+generate_ssh_keypair_dir: "/opt"
+
+# Comment
+generate_ssh_keypair_comment: ""
