@@ -14,6 +14,13 @@ install_gitlab_postfix_state: "started"
 # URL on which GitLab will be reachable
 install_gitlab_external_url: "http://gitlab.example.com"
 
+# Enable internal Let's Encrypt client ("true"/"false")
+# Must be "false" for 'http' URL or
+# when you have own LE client
+# It's string, not bool!
+# And lowercase only!
+install_gitlab_le_enabled: "false"
+
 # Reverse proxy internal IP, if exists
 install_gitlab_proxy_internal_ip: ""
 

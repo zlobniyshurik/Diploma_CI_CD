@@ -1,0 +1,37 @@
+---
+# Раздаём приватные ключи
+- name: "Deploy private key(s)"
+  become: true
+  ansible.builtin.copy:
+    dest: "/root/.ssh/"
+    src: "{{ deploy_ssh_keys_priv_dir }}/{{ deploy_ssh_keys_priv_key }}"
+    mode: "0400"
+    owner: "root"
+    group: "root"
+
+# Раздаём публичные ключи
+- name: "Deploy public key(s)"
+  become: true
+  ansible.builtin.copy:
+    dest: "/root/.ssh/"
+    src: "{{ deploy_ssh_keys_priv_dir }}/{{ deploy_ssh_keys_priv_key }}.pub"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+# Добавляем публичный ключ в authorized_keys
+- name: "Add public key to authorized keys"
+  become: true
+  ansible.builtin.shell:
+    cmd: bash -c "cat /root/.ssh/{{ deploy_ssh_keys_priv_key }}.pub >> /root/.ssh/authorized_keys"
+  changed_when: false
+
+# Отключаем строгую проверку ключей
+- name: "Disable strict ssh-key checking"
+  become: true
+  ansible.builtin.template:
+    src: "templates/config.j2"
+    dest: "/root/.ssh/config"
+    owner: "root"
+    group: "root"
+    mode: "0644"
