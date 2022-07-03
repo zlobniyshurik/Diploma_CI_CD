@@ -1,24 +1,25 @@
 ---
-- name: "Reconfigure DNF to use proxy"
-  hosts: Pass3
-  gather_facts: false
-  become: true
-  become_user: "root"
-  remote_user: "cloud-user"
-  roles:
-    - role: setup_proxy_dnf
-      vars:
-        setup_proxy_fqdn: "{{ tf_proxy_name }}"
-        setup_proxy_port: "{{ tf_proxy_port }}"
-
-- name: "Install common tools"
+# Устанавливаем общее ПО для хостов из группы
+# Pass3 (GitLab + GitLab Runner(s) + Monitoring)
+- name: "Common setup part for Pass3 hosts"
   hosts: Pass3
   gather_facts: true
   become: true
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - role: install_common
+    - role: setup_proxy_dnf                     # Все хосты, кроме прокси, доступа к интернету напрямую не имеют
+      vars:                                     # Обучаем несчастных работать через прокси
+        setup_proxy_fqdn: "{{ tf_proxy_name }}"
+        setup_proxy_port: "{{ tf_proxy_port }}"
+    - role: deploy_ssh_keys                     # Заливаем SSH-ключи
+      vars:
+        deploy_ssh_keys_priv_dir: "./ssh"
+        deploy_ssh_keys_priv_key: "rsync.key"
+        deploy_ssh_keys_trusted_domain: "{{ tf_my_domain_tld }}"
+        deploy_ssh_keys_owner: "cloud-user"
+        deploy_ssh_keys_target_dir: "/home/cloud-user/.ssh"
+    - role: install_common                      # Ставим комплект необходимых утилит
 
 - name: "Install Gitlab-server"
   hosts: GitLabSrv
@@ -27,6 +28,12 @@
   become_user: "root"
   remote_user: "cloud-user"
   roles:
+    - role: install_pull_files                               # Устанавливаем сервис для выкачки
+      vars:                                                  # HTTPS-сертификатов с прокси сервера
+        install_pull_files_src_login_host: "cloud-user@{{ tf_proxy_name }}"
+        install_pull_files_path_ssh_key: "/home/cloud-user/.ssh/rsync.key"
+        install_pull_files_src_files: "/opt/LEscript/certs/"
+        install_pull_files_dest_dir: "/opt/LEscript/certs/"
     - role: install_gitlab
       vars:
         install_gitlab_root_pass: "{{ tf_gitlab_root_pass }}"

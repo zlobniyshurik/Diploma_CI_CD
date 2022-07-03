@@ -30,4 +30,3 @@
     - role: install_proxy                             # Устанавливаем всё остальное
       vars:
         proxy_my_domain_tld: "{{ tf_my_domain_tld }}"
-        proxy_tf_workspace: "{{ tf_workspace }}"
