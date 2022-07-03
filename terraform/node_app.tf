@@ -25,7 +25,7 @@ resource "yandex_compute_instance" "app" {
     initialize_params {
       image_id    = var.boot_disk_image_id
       name        = "root-${var.app_name}"
-      type        = "network-hdd"
+      type        = "network-ssd"
       size        = "10"
     }
   }

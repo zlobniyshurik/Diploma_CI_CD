@@ -12,7 +12,7 @@ server {
 		# Настройки SSL для HTTPS #
 		###########################
 
-		resolver 8.8.8.8 [2001:4860:4860::8888];
+		resolver {{ tf_dns_ip }};
 
 		# Указываем пути к RSA-сертификатам
 		ssl_certificate /opt/LEscript/certs/{{ proxy_my_domain_tld }}/fullchain.cer;
@@ -72,6 +72,6 @@ server {
 
 			proxy_set_header Host $host;
 
-			proxy_pass http://{{ item.value.proxy_pass }}$request_uri;
+			proxy_pass https://{{ item.value.proxy_pass }}$request_uri;
 		}
 	}

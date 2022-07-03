@@ -1,33 +1,99 @@
 ---
 # Раздаём приватные ключи
-- name: "Deploy private key(s)"
+- name: "Deploy private key to user"
   become: true
   ansible.builtin.copy:
-    dest: "/root/.ssh/"
     src: "{{ deploy_ssh_keys_priv_dir }}/{{ deploy_ssh_keys_priv_key }}"
+    dest: "{{ deploy_ssh_keys_target_dir }}/"
+    mode: "0400"
+    owner: "{{ deploy_ssh_keys_owner }}"
+    group: "{{ deploy_ssh_keys_owner }}"
+
+# Если root'у копию не сдеплоить,
+# то местами таааакииие баги вылазят...
+- name: "Deploy private key to root"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ deploy_ssh_keys_priv_dir }}/{{ deploy_ssh_keys_priv_key }}"
+    dest: "/root/.ssh/"
     mode: "0400"
     owner: "root"
     group: "root"
 
 # Раздаём публичные ключи
-- name: "Deploy public key(s)"
+- name: "Deploy public key to user"
   become: true
   ansible.builtin.copy:
-    dest: "/root/.ssh/"
     src: "{{ deploy_ssh_keys_priv_dir }}/{{ deploy_ssh_keys_priv_key }}.pub"
+    dest: "{{ deploy_ssh_keys_target_dir }}/"
+    mode: "0644"
+    owner: "{{ deploy_ssh_keys_owner }}"
+    group: "{{ deploy_ssh_keys_owner }}"
+
+# Копия для root'а
+- name: "Deploy public key to root"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ deploy_ssh_keys_priv_dir }}/{{ deploy_ssh_keys_priv_key }}.pub"
+    dest: "/root/.ssh/"
     mode: "0644"
     owner: "root"
     group: "root"
 
 # Добавляем публичный ключ в authorized_keys
-- name: "Add public key to authorized keys"
+- name: "Add public key to authorized_keys for user"
+  become: true
+  ansible.builtin.shell:
+    cmd: bash -c "cat {{ deploy_ssh_keys_target_dir }}/{{ deploy_ssh_keys_priv_key }}.pub >> {{ deploy_ssh_keys_target_dir }}/authorized_keys"
+  changed_when: false
+
+# Добавляем публичный ключ в authorized_keys для root'а
+- name: "Add public key to authorized_keys for root"
   become: true
   ansible.builtin.shell:
     cmd: bash -c "cat /root/.ssh/{{ deploy_ssh_keys_priv_key }}.pub >> /root/.ssh/authorized_keys"
   changed_when: false
 
-# Отключаем строгую проверку ключей
-- name: "Disable strict ssh-key checking"
+# Сортируем ключи в authorized_keys юзера, выкидывая дубликаты
+- name: "Sort public keys in user's authorized_keys"
+  become: true
+  ansible.builtin.shell:
+    cmd: bash -c "sort {{ deploy_ssh_keys_target_dir }}/authorized_keys | uniq > {{ deploy_ssh_keys_target_dir }}/authorized_keys.uniq"
+  changed_when: false
+
+# Сортируем ключи в authorized_keys root'а, выкидывая дубликаты
+- name: "Sort public keys in root's authorized_keys"
+  become: true
+  ansible.builtin.shell:
+    cmd: bash -c "sort /root/.ssh/authorized_keys | uniq > /root/.ssh/authorized_keys.uniq"
+  changed_when: false
+
+# Заменяем authorized_keys юзера отсортированной версией
+- name: "Update authorized_keys for user"
+  become: true
+  ansible.builtin.command:
+    cmd: "mv {{ deploy_ssh_keys_target_dir }}/authorized_keys.uniq {{ deploy_ssh_keys_target_dir }}/authorized_keys"
+  changed_when: false
+
+# Заменяем authorized_keys root'а отсортированной версией
+- name: "Update authorized_keys for root"
+  become: true
+  ansible.builtin.command:
+    cmd: "mv /root/.ssh/authorized_keys.uniq /root/.ssh/authorized_keys"
+  changed_when: false
+
+# Отключаем строгую проверку ключей в профиле пользователя
+- name: "Disable strict ssh-key checking for user"
+  become: true
+  ansible.builtin.template:
+    src: "templates/config.j2"
+    dest: "{{ deploy_ssh_keys_target_dir }}/config"
+    owner: "{{ deploy_ssh_keys_owner }}"
+    group: "{{ deploy_ssh_keys_owner }}"
+    mode: "0644"
+
+# Отключаем строгую проверку ключей в профиле root'а
+- name: "Disable strict ssh-key checking for root"
   become: true
   ansible.builtin.template:
     src: "templates/config.j2"

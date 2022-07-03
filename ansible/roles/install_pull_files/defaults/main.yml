@@ -1,0 +1,12 @@
+---
+# Login string in format login@host_fqdn_name
+install_pull_files_src_login_host: "root@example.com"
+
+# Path to SSH-key
+install_pull_files_path_ssh_key: "/root/.ssh/secret.key"
+
+# Catalog/files that will be pulled
+install_pull_files_src_files: "/opt/LEscript/certs/"
+
+# Destination
+install_pull_files_dest_dir: "/opt/LEscript/certs/"

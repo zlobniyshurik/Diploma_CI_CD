@@ -45,6 +45,13 @@ variable "geo_zone" {
   default     = "ru-central1-a"
 }
 
+# IP внутреннего DNS в облаке.
+# Подобран методом тыка, документации не обнаружено
+variable "ip_dns" {
+  description = "Network internal DNS IP address"
+  type        = string
+  default     = "172.16.1.2"
+}
 
 ##################
 # Hosts settings #
@@ -89,14 +96,14 @@ variable "app_name" {
 variable "gitlab_name" {
   description = "GitLab host name"
   type        = string
-  default     = "gitlab"
+  default     = "gitlab-int"
 }
 
 # GitLab Runner nodename prefix
 variable "runner_name_prefix" {
   description = "GitLab Runner host name prefix"
   type        = string
-  default     = "runner"
+  default     = "runner0"
 }
 
 # Number of GitLab runner nodes

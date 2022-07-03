@@ -1,8 +1,4 @@
 ---
-- name: "Role *install_common* starting..."
-  ansible.builtin.debug:
-    msg: "*install_common* role starting..."
-
 # Без фаервола, как голышом на званом
 # вечере - можно, но не прилично.
 - name: "Install firewalld"
@@ -35,6 +31,22 @@
       - glibc-all-langpacks
       - mc
     state: present
+
+# Как же он меня задрал своими
+# ударами в спину изподтишка
+- name: "Disable SElinux"
+  become: true
+  ansible.builtin.copy:
+    src: "files/config"
+    dest: "/etc/selinux/config"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Disable SElinux NOW!!!"
+  become: true
+  ansible.builtin.command:
+    cmd: "setenforce 0"
 
 # Создаем локальную зону "home", куда пускают только
 # с локальных IP

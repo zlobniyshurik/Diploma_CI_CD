@@ -11,7 +11,7 @@
         generate_ssh_keypair_algo: "ed25519"
         generate_ssh_keypair_bit_size: "4096"
         generate_ssh_keypair_dir: "./ssh"
-        generate_ssh_keypair_filename: "exchange"
+        generate_ssh_keypair_filename: "test"
         generate_ssh_keypair_comment: "root_test@bfg-10k.ru"
 
 - name: "Install squid for GitLab on Test2"
@@ -39,8 +39,14 @@
     - role: deploy_ssh_keys
       vars:
         deploy_ssh_keys_priv_dir: "./ssh"
-        deploy_ssh_keys_priv_key: "exchange"
+        deploy_ssh_keys_priv_key: "test"
         deploy_ssh_keys_trusted_domain: "bfg-10k.ru"
+    - role: install_pull_files
+      vars:
+        install_pull_files_src_host: "test2.bfg-10k.ru"
+        install_pull_files_src_login: "root"
+        install_pull_files_src_files: "/opt/LEscript/certs/"
+        install_pull_files_dest_dir: "/opt/LEscript/certs/"
     - role: setup_proxy_dnf
       vars:
         setup_proxy_fqdn: "test2.bfg-10k.ru"
@@ -49,7 +55,6 @@
     - role: install_common
     - role: install_gitlab
       vars:
-        install_gitlab_root_pass: "TestRootPass"
         install_gitlab_external_url: "https://gltest.bfg-10k.ru"
         install_gitlab_root_pass: "DukeNukemMustDie!!!"
         install_gitlab_proxy_internal_ip: "192.168.1.98"

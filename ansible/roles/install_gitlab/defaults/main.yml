@@ -21,6 +21,15 @@ install_gitlab_external_url: "http://gitlab.example.com"
 # And lowercase only!
 install_gitlab_le_enabled: "false"
 
+# Path to CA-cert
+install_gitlab_ca_cert: "/opt/LEscript/certs/example.com/ca.cer"
+
+# Path to fullchain-cert
+install_gitlab_fullchain_cert: "opt/LEscript/certs/example.com/fullchain.cer"
+
+# Path to cert key
+install_gitlab_cert_key: "opt/LEscript/certs/example.com/example.com.key"
+
 # Reverse proxy internal IP, if exists
 install_gitlab_proxy_internal_ip: ""
 

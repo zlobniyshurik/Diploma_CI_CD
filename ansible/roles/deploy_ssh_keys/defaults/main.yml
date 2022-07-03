@@ -10,6 +10,8 @@ deploy_ssh_keys_priv_key: "secret"
 # be accepted without strict key checking
 deploy_ssh_keys_trusted_domain: "example.com"
 
+# Path to store keys
+deploy_ssh_keys_target_dir: "/root/.ssh"
 
-
-
+# Keys owner
+deploy_ssh_keys_owner: "root"

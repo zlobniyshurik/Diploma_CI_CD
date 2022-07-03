@@ -1,0 +1,12 @@
+[Unit]
+Description=Get files from remote host at system startup
+Requires=network.target
+After=network.target
+Before=nginx.service
+
+[Service]
+ExecStartPre=-/bin/sleep 10
+ExecStart=/bin/bash -c 'sudo rsync -e "ssh -i {{ install_pull_files_path_ssh_key }}" -a {{ install_pull_files_src_login_host }}:{{ install_pull_files_src_files }} {{ install_pull_files_dest_dir }}'
+
+[Install]
+WantedBy=default.target

@@ -19,6 +19,7 @@ resource "local_file" "inventory" {
       ip_gitlab           = "${yandex_compute_instance.gitlab.network_interface.0.ip_address}"
       fqdn_runner         = "${yandex_compute_instance.runner.*.fqdn}"
       ip_runner           = "${yandex_compute_instance.runner.*.network_interface.0.ip_address}"
+      ip_dns              = "${var.ip_dns}"
     }
   )
   filename = "../ansible/inventory"

@@ -3,8 +3,9 @@
 #
 
 server {
-    listen       80;
+#    listen       80;
 #    listen [::]:80;
+    listen 443 ssl http2;
 
     # Всё равно на этом сервере других сайтов кроме вордпресса нет
     server_name  _;
@@ -12,6 +13,37 @@ server {
 
     access_log /var/log/nginx/{{ install_app_my_domain_tld }}/access.log;
     error_log /var/log/nginx/{{ install_app_my_domain_tld }}/error.log;
+
+    ###########################
+    # Настройки SSL для HTTPS #
+    ###########################
+
+    resolver {{ tf_dns_ip }};
+
+    # Указываем пути к RSA-сертификатам
+    ssl_certificate /opt/LEscript/certs/{{ install_app_my_domain_tld }}/fullchain.cer;
+    ssl_certificate_key /opt/LEscript/certs/{{ install_app_my_domain_tld }}/{{ install_app_my_domain_tld }}.key;
+
+    # Указываем пути к ECC-сертификатам
+    ssl_certificate /opt/LEscript/certs/{{ install_app_my_domain_tld }}_ecc/fullchain.cer;
+    ssl_certificate_key /opt/LEscript/certs/{{ install_app_my_domain_tld }}_ecc/{{ install_app_my_domain_tld }}.key;
+
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+    ssl_session_tickets off;
+
+    # 2048-битный ключ Диффи-Хеллмана
+    ssl_dhparam /etc/pki/tls/certs/dhparam.pem;
+
+    # Указываем виды шифрования (тут секьюрно, но без фанатизма)
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers on;
+
+    # позволяем серверу прикреплять OCSP-ответы, тем самым уменьшая время загрузки страниц у пользователей
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
 
     ###########################
     # Усложняем жизнь хакерам #

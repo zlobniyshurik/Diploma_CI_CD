@@ -1,43 +1,47 @@
 ---
-- name: "Reconfigure DNF to use proxy"
-  hosts: Pass2
-  gather_facts: false
-  become: true
-  become_user: "root"
-  remote_user: "cloud-user"
-  roles:
-    - role: setup_proxy_dnf
-      vars:
-        setup_proxy_fqdn: "{{ tf_proxy_name }}"
-        setup_proxy_port: "{{ tf_proxy_port }}"
-
-- name: "Install common tools"
+# Устанавливаем общее ПО для хостов из группы
+# Pass2 (DB nodes + Application-server)
+- name: "Common setup part for Pass2 hosts"
   hosts: Pass2
   gather_facts: true
   become: true
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - role: install_common
+    - role: setup_proxy_dnf                     # Все хосты, кроме прокси, доступа к интернету напрямую не имеют
+      vars:                                     # Обучаем несчастных работать через прокси
+        setup_proxy_fqdn: "{{ tf_proxy_name }}"
+        setup_proxy_port: "{{ tf_proxy_port }}"
+    - role: deploy_ssh_keys                     # Заливаем SSH-ключи
+      vars:
+        deploy_ssh_keys_priv_dir: "./ssh"
+        deploy_ssh_keys_priv_key: "rsync.key"
+        deploy_ssh_keys_trusted_domain: "{{ tf_my_domain_tld }}"
+        deploy_ssh_keys_owner: "cloud-user"
+        deploy_ssh_keys_target_dir: "/home/cloud-user/.ssh"
+    - role: install_common                      # Ставим комплект необходимых утилит
 
-- name: "Install Database-servers"
+# Устанавливаем кластер БД и
+# подготавливаем базу для WordPress'а
+- name: "Install Database-cluster"
   hosts: Databases
   gather_facts: true
   become: true
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - role: install_mariadb
-    - role: setup_cluster
+    - role: install_mariadb                # Собственно, установка БД на ноды
+    - role: setup_cluster                  # Настройка кластера Master-Slave из нод
       vars:
         cluster_master: "{{ db_master }}"
-    - role: setup_db
-      vars:                                # неохота мне еще и явки/пароли вордпресса в переменные выносить
-        setup_db_host: "{{ db_master }}"   # пусть будут захардкожены открытым текстом
-        setup_db_name: "wordpress"
-        setup_db_owner_user: "wordpress"
-        setup_db_owner_pass: "wordpress"
+    - role: setup_db                       # Настройка базы для WordPress'а
+      vars:
+        setup_db_host: "{{ db_master }}"
+        setup_db_name: "wordpress"         # неохота мне еще и явки/пароли вордпресса в переменные выносить
+        setup_db_owner_user: "wordpress"   # пусть будут захардкожены открытым текстом
+        setup_db_owner_pass: "wordpress"   # скрипт-кидди скажут мне "Спасибо!!!"
 
+# Установка WordPress'а на сервер приложений
 - name: "Install Wordpress-server"
   hosts: Applications
   gather_facts: false
@@ -45,13 +49,16 @@
   become_user: "root"
   remote_user: "cloud-user"
   roles:
-    - role: install_app
+    - role: install_pull_files                               # Устанавливаем сервис для выкачки
+      vars:                                                  # HTTPS-сертификатов с прокси сервера
+        install_pull_files_src_login_host: "cloud-user@{{ tf_proxy_name }}"
+        install_pull_files_path_ssh_key: "/home/cloud-user/.ssh/rsync.key"
+        install_pull_files_src_files: "/opt/LEscript/certs/"
+        install_pull_files_dest_dir: "/opt/LEscript/certs/"
+    - role: install_app                                      # Установка WordPress'а
       vars:
         install_app_my_domain_tld: "{{ tf_my_domain_tld }}"
         install_app_db_host: "{{ tf_db_master_ip }}"
         install_app_db_name: "wordpress"
         install_app_db_user: "wordpress"
         install_app_db_pass: "wordpress"
-  environment:
-    http_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"
-    https_proxy: "http://{{ tf_proxy_name }}:{{ tf_proxy_port }}"

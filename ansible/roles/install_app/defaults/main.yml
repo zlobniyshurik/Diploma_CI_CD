@@ -1,6 +1,6 @@
 ---
 # nginx version
-install_app_nginx_ver: "1.20"
+install_app_nginx_ver: "1.14"
 
 # PHP version
 install_app_php_ver: "8.0"

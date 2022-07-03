@@ -1,11 +1,10 @@
 ---
-# Ставим PHP 8.0
-- name: "Install PHP 8.0"
+# Ставим PHP
+- name: "Install PHP"
   ansible.builtin.include_role:
     name: install_php
   vars:
     install_php_ver: "{{ install_app_php_ver }}"
-
 # Вырубаем проверку SElinux для httpd_t
 # Иначе не хочет WordPress с базами данных
 # общаться. И я не пойму - почему.
@@ -16,8 +15,8 @@
     "semanage permissive -a httpd_t"
   changed_when: false
 
-# Ставим nginx v 1.20
-- name: "Install nginx v1.20"
+# Ставим nginx
+- name: "Install nginx"
   ansible.builtin.include_role:
     name: install_nginx
   vars:
@@ -34,12 +33,27 @@
     append: true
     groups: "apache"
 
-# Открываем в фаерволе доступ по HTTP
-- name: "Enable HTTP in firewall"
+# Проверяем - надо ли генерировать ключ Диффи-Хеллмана?
+# Их генерация - штука долгая
+- name: "Check if Diffie-Hellman key already exists"
+  become: true
+  ansible.builtin.stat:
+    path: "/etc/ssl/certs/dhparam.pem"
+  register: dh_key_done
+    
+# Таки надо генерить... Сходите за кофе
+- name: "Generate Diffie-Hellman key"  # Ключи генерирует долго - минуты 2
+  become: true                         # А если поставить 4096 бит, то и
+  ansible.builtin.command:             # 20 минут - не предел.
+    cmd: "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
+  when: not dh_key_done.stat.exists
+
+# Открываем в фаерволе доступ по HTTPS
+- name: "Enable HTTPS in firewall"
   become: true
   ansible.posix.firewalld:
     zone: "home"
-    service: "http"
+    service: "https"
     state: "enabled"
     permanent: true
     immediate: true

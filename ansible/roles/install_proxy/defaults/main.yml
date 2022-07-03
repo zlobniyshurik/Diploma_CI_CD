@@ -19,7 +19,7 @@ proxy_settings:
   www:
     server_string: "www.{{ proxy_my_domain_tld }} {{ proxy_my_domain_tld }}"
     server_log_dir: "www"
-    proxy_pass: "{{ tf_app_server_ip }}"
+    proxy_pass: "{{ tf_app_server_fqdn }}"
   grafana:
     server_string: "grafana.{{ proxy_my_domain_tld }}"
     server_log_dir: "grafana"
@@ -35,4 +35,4 @@ proxy_settings:
   gitlab:
     server_string: "gitlab.{{ proxy_my_domain_tld }}"
     server_log_dir: "gitlab"
-    proxy_pass: "{{ tf_gitlab_server_ip }}"
+    proxy_pass: "{{ tf_gitlab_server_fqdn }}"

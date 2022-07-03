@@ -1,0 +1,26 @@
+---
+# Создаём целевую папку на удалённой машине
+- name: "Create target dir"
+  become: true
+  ansible.builtin.file:
+    path: "{{ install_pull_files_dest_dir }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0777"
+
+# Копируем файл с юнитом-качалкой файлов
+- name: "Setup pullfiles.service"
+  become: true
+  ansible.builtin.template:
+    src: "templates/pullfiles.service.j2"
+    dest: "/etc/systemd/system/pullfiles.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Start pullfiles.service"
+
+# Принудительно дёргаем сервис
+- name: "Flush handlers (pullfiles)"
+  ansible.builtin.meta:
+    flush_handlers

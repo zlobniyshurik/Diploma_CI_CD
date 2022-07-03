@@ -1,0 +1,9 @@
+---
+# Запускаем сервис
+- name: "Start pullfiles.service"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "pullfiles.service"
+    state: "started"
+    enabled: true
