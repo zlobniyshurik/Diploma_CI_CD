@@ -21,7 +21,7 @@ install_wordpress_db_user: "wordpress"
 install_wordpress_db_pass: "wordpress"
 
 # WWW-catalog for Wordpress
-install_wordpress_dir: "/var/www/wordpress"
+install_wordpress_dir: "/var/www"
 
 # User for Wordpress WWW-catalog
 install_wordpress_www_user: "nginx"
