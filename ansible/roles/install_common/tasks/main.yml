@@ -43,10 +43,16 @@
     group: "root"
     mode: "0644"
 
-- name: "Disable SElinux NOW!!!"
-  become: true
-  ansible.builtin.command:
-    cmd: "setenforce 0"
+- name: "Disable SElinux now"
+  block:
+    - name: "Try to disable SElinux NOW!!!"
+      become: true
+      ansible.builtin.command:
+        cmd: "setenforce 0"
+  rescue:
+    - name: "Hooray!!!"
+      ansible.builtin.debug:
+        msg: "SElinux already disabled?! Wow!!!"
 
 # Создаем локальную зону "home", куда пускают только
 # с локальных IP

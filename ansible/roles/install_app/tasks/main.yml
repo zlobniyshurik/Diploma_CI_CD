@@ -40,7 +40,7 @@
   ansible.builtin.stat:
     path: "/etc/ssl/certs/dhparam.pem"
   register: dh_key_done
-    
+
 # Таки надо генерить... Сходите за кофе
 - name: "Generate Diffie-Hellman key"  # Ключи генерирует долго - минуты 2
   become: true                         # А если поставить 4096 бит, то и

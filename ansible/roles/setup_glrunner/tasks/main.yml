@@ -1,0 +1,18 @@
+---
+# Задаём параметры раннера
+- name: "Setup GitLab runner"
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      gitlab-runner register
+      --non-interactive
+      --url "{{ setup_glrunner_host_url }}"
+      --registration-token "{{ setup_glrunner_token }}"
+      --executor "{{ setup_glrunner_executor }}"
+      --docker-image "{{ setup_glrunner_docker_img }}"
+      --description "{{ setup_glrunner_description }}"
+      --maintenance-note "{{ setup_glrunner_maintenance }}"
+      --tag-list "{{ setup_glrunner_tags }}"
+      --run-untagged="{{ setup_glrunner_run_untagged }}"
+      --locked="{{ setup_glrunner_locked }}"
+      --access-level="{{ setup_glrunner_access_lvl }}"

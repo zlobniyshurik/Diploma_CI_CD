@@ -683,6 +683,7 @@ external_url '{{ install_gitlab_external_url }}'
 # gitlab_rails['initial_root_password'] = "password"
 gitlab_rails['initial_root_password'] = "{{ install_gitlab_root_pass }}"
 # gitlab_rails['initial_shared_runners_registration_token'] = "token"
+gitlab_rails['initial_shared_runners_registration_token'] = "{{ install_gitlab_runner_token }}"
 
 #### Toggle if root password should be printed to STDOUT during initialization
 # gitlab_rails['display_initial_root_password'] = false

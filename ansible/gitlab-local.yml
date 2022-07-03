@@ -1,31 +1,22 @@
 ---
-- name: "Generate SSH keypair"
+- name: "Generate token"
   hosts: localhost
   gather_facts: false
   become: true
   become_user: "root"
   remote_user: "root"
   roles:
-    - role: generate_ssh_keypair
+    - role: generate_token
       vars:
-        generate_ssh_keypair_algo: "ed25519"
-        generate_ssh_keypair_bit_size: "4096"
-        generate_ssh_keypair_dir: "./ssh"
-        generate_ssh_keypair_filename: "test"
-        generate_ssh_keypair_comment: "root_test@bfg-10k.ru"
+        generate_token_filepath: "./ssh/token"
 
 - name: "Install squid for GitLab on Test2"
   hosts: Test2
   gather_facts: true
   become: true
   become_user: "root"
-  remote_user: "root"
+  remote_user: "cloud-user"
   roles:
-    - role: deploy_ssh_keys
-      vars:
-        deploy_ssh_keys_priv_dir: "./ssh"
-        deploy_ssh_keys_priv_key: "exchange"
-        deploy_ssh_keys_trusted_domain: "bfg-10k.ru"
     - role: install_common
     - role: install_squid
 
@@ -34,19 +25,9 @@
   gather_facts: true
   become: true
   become_user: "root"
-  remote_user: "root"
+  remote_user: "cloud-user"
   roles:
-    - role: deploy_ssh_keys
-      vars:
-        deploy_ssh_keys_priv_dir: "./ssh"
-        deploy_ssh_keys_priv_key: "test"
-        deploy_ssh_keys_trusted_domain: "bfg-10k.ru"
-    - role: install_pull_files
-      vars:
-        install_pull_files_src_host: "test2.bfg-10k.ru"
-        install_pull_files_src_login: "root"
-        install_pull_files_src_files: "/opt/LEscript/certs/"
-        install_pull_files_dest_dir: "/opt/LEscript/certs/"
+    - role: generate_token
     - role: setup_proxy_dnf
       vars:
         setup_proxy_fqdn: "test2.bfg-10k.ru"
@@ -57,5 +38,23 @@
       vars:
         install_gitlab_external_url: "https://gltest.bfg-10k.ru"
         install_gitlab_root_pass: "DukeNukemMustDie!!!"
+        install_gitlab_runner_token: "{{ lookup('ansible.builtin.file', './ssh/token') }}"
         install_gitlab_proxy_internal_ip: "192.168.1.98"
         install_gitlab_proxy_url: "http://test2.bfg-10k.ru:3128"
+        install_gitlab_ca_cert: "/opt/LEscript/certs/bfg-10k.ru/ca.cer"
+        install_gitlab_fullchain_cert: "/opt/LEscript/certs/bfg-10k.ru/fullchain.cer"
+        install_gitlab_cert_key: "/opt/LEscript/certs/bfg-10k.ru/bfg-10k.ru.key"
+
+- name: "Test_install_runner on Test2"
+  hosts: Test2
+  gather_facts: false
+  become: true
+  become_user: "root"
+  remote_user: "cloud-user"
+  roles:
+    - role: install_glrunner
+    - role: setup_glrunner
+      vars:
+        setup_glrunner_token: "{{ lookup('ansible.builtin.file', './ssh/token') }}"
+        setup_glrunner_host_url: "https://test.bfg-10k.ru"
+        setup_glrunner_executor: "docker"

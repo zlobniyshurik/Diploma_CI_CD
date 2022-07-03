@@ -9,12 +9,12 @@
       - perl
     state: "present"
 
-# Даём в фаерволе доступ по HTTP
-- name: "Allow HTTP in firewall for local network (zone 'home')"
+# Даём в фаерволе доступ по HTTPS
+- name: "Allow HTTPS in firewall for local network (zone 'home')"
   become: true
   ansible.posix.firewalld:
     zone: "home"
-    service: "http"
+    service: "https"
     state: "enabled"
     immediate: true
     permanent: true

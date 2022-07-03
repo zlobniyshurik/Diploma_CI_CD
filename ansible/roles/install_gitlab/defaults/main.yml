@@ -2,6 +2,9 @@
 # GitLab root password after install
 install_gitlab_root_pass: "GitLab#r00tPa$$"
 
+# GitLab runner token after install
+install_gitlab_runner_token: "98765432109876543210"
+
 # If true, postfix will be installed before GitLab
 install_gitlab_postfix_install: true
 

@@ -1,0 +1,26 @@
+---
+# Проверяем, нет ли уже созданного токена?
+# Новый поверх старого лучше не писать для
+# повторяемости результата при повторном запуске
+# плейбука
+- name: "Test if token already exists"
+  ansible.builtin.stat:
+    path: "{{ generate_token_filepath }}"
+  register: token_exists
+
+# Создаём случайный токен из 20 символов (буквы/цифры)
+- name: "Generate token"
+  ansible.builtin.set_fact:
+    token: "{{ lookup('community.general.random_string', length = 20, special = false) }}"
+  when: not token_exists.stat.exists
+
+# Записываем его в файл
+- name: "Write token to file"
+  become: true
+  ansible.builtin.copy:
+    content: "{{ token }}"
+    dest: "{{ generate_token_filepath }}"
+    owner: "root"
+    group: "root"
+    mode: "0444"
+  when: not token_exists.stat.exists

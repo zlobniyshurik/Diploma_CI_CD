@@ -1,0 +1,3 @@
+---
+# Output file for generated token
+generate_token_filepath: "./token"

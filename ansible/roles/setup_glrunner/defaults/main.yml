@@ -1,0 +1,30 @@
+---
+# Token for connect to GitLab
+setup_glrunner_token: "98765432109876543210"
+
+# Gitlab host URL
+setup_glrunner_host_url: "example.com"
+
+# Runner executor
+setup_glrunner_executor: "docker"
+
+# Docker Image
+setup_glrunner_docker_img: "alpine:latest"
+
+# Description
+setup_glrunner_description: "Default description"
+
+# Maintenance note
+setup_glrunner_maintenance: "Free form notes"
+
+# Tag list (comma separated)
+setup_glrunner_tags: ""
+
+# Run untagged ("true"/"false")
+setup_glrunner_run_untagged: "true"
+
+# Locked ("true"/"false")
+setup_glrunner_locked: "false"
+
+# Access level
+setup_glrunner_access_lvl: "not_protected"
