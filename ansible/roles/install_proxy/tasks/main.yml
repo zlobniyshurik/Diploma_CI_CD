@@ -5,8 +5,7 @@
     msg: [
       "*install_proxy* role starting...",
       "-----------------------------------------",
-      "proxy_my_domain_tld is: {{ proxy_my_domain_tld }}",
-      "proxy_tf_workspace is: {{ proxy_tf_workspace }}"
+      "proxy_my_domain_tld is: {{ proxy_my_domain_tld }}"
     ]
 
 # Вырубаем проверку SElinux для httpd_t
