@@ -39,3 +39,4 @@ backend.conf
 lebackup*.tar.gz
 /ansible/ssh/*
 !/ansible/ssh/README.md
+/ansible/roles/emulate_tf/*
