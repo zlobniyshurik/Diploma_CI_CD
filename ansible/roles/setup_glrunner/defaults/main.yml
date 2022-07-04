@@ -3,7 +3,7 @@
 setup_glrunner_token: "98765432109876543210"
 
 # Gitlab host URL
-setup_glrunner_host_url: "example.com"
+setup_glrunner_host_url: "https://example.com"
 
 # Runner executor
 setup_glrunner_executor: "docker"
