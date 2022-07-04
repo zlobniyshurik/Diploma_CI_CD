@@ -37,4 +37,4 @@ install_gitlab_cert_key: "opt/LEscript/certs/example.com/example.com.key"
 install_gitlab_proxy_internal_ip: ""
 
 # Reverse proxy port, if exists
-install_gitlab_proxy_url: ""
+install_gitlab_proxy_port: ""
