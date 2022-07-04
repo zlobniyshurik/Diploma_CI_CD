@@ -16,3 +16,4 @@
       --run-untagged="{{ setup_glrunner_run_untagged }}"
       --locked="{{ setup_glrunner_locked }}"
       --access-level="{{ setup_glrunner_access_lvl }}"
+  changed_when: false

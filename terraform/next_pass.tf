@@ -45,6 +45,6 @@ resource "null_resource" "run_ansible3" {
   }
 
   depends_on = [
-    null_resource.run_ansible2
+    null_resource.run_ansible1
   ]
 }

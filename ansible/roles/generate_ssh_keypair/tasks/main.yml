@@ -19,5 +19,11 @@
 # Если не создавали - создаём сладкую парочку
 - name: "Generate keypair"
   ansible.builtin.command:
-    cmd: ssh-keygen -t {{ generate_ssh_keypair_algo }} -b {{ generate_ssh_keypair_bit_size }} -f '{{ generate_ssh_keypair_dir }}/{{ generate_ssh_keypair_filename }}' -C '{{ generate_ssh_keypair_comment }}' -q -N ''
+#    cmd: ssh-keygen -t {{ generate_ssh_keypair_algo }} -b {{ generate_ssh_keypair_bit_size }} -f '{{ generate_ssh_keypair_dir }}/{{ generate_ssh_keypair_filename }}' -C '{{ generate_ssh_keypair_comment }}' -q -N ''
+    cmd: >
+      ssh-keygen -t {{ generate_ssh_keypair_algo }}
+      -b {{ generate_ssh_keypair_bit_size }}
+      -f '{{ generate_ssh_keypair_dir }}/{{ generate_ssh_keypair_filename }}'
+      -C '{{ generate_ssh_keypair_comment }}'
+      -q -N ''
   when: not key_done.stat.exists

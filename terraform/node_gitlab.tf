@@ -13,11 +13,11 @@ resource "yandex_compute_instance" "gitlab" {
     delete = "5m"
   }
 
-  # В режиме 'stage' создаём виртуалку с 2ядрами, 4 Gb RAM и производительностью ядер 100%,
+  # В режиме 'stage' создаём виртуалку с 4 ядрами, 4 Gb RAM и производительностью ядер 100%,
   # В противном случае выделяем 4ядра, 4Gb RAM и производительностью 100%
-  # И то не факт, что оно таки сможет выкачать гигабайт GitLab'а
+  # тут сколько не давай - всё мало, особенно в тормозном облаке
   resources {
-    cores  = (terraform.workspace == "stage") ? 2 : 4
+    cores  = (terraform.workspace == "stage") ? 4 : 4
     memory = (terraform.workspace == "stage") ? 4 : 4
     core_fraction = (terraform.workspace == "stage") ? 100 : 100
   }

@@ -1,0 +1,70 @@
+[all]
+localhost ansible_connection=local
+
+[all:children]
+Diplom
+
+[Diplom:children]
+Pass1
+Pass2
+Pass3
+
+[Pass1:children]
+Proxies
+
+[Pass2:children]
+Databases
+Applications
+
+[Pass3:children]
+GitLabSrv
+Runners
+
+[Proxies]
+proxy.diplomshurika.ru ansible_host="192.168.1.100" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+
+[Databases]
+db01.diplomshurika.ru ansible_host="192.168.1.101" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+db02.diplomshurika.ru ansible_host="192.168.1.102" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+
+[Applications]
+app.diplomshurika.ru ansible_host="192.168.1.103" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+
+[GitLabSrv]
+gitlab-int.diplomshurika.ru ansible_host="192.168.1.104" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+
+[Runners]
+runner01.diplomshurika.ru ansible_host="192.168.1.105" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+
+[Monitoring]
+monitoring.diplomshurika.ru ansible_host="192.168.1.106" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
+
+[all:vars]
+tf_my_domain_tld = "diplomshurika.ru"
+
+[Diplom:vars]
+tf_workspace = "stage"
+tf_proxy_name = "proxy.diplomshurika.ru"
+tf_proxy_port = "3128"
+tf_app_server_ip = "192.168.1.103"
+tf_app_server_fqdn = "app.diplomshurika.ru"
+tf_gitlab_server_ip = "192.168.1.104"
+tf_gitlab_server_fqdn = "gitlab-int.diplomshurika.ru"
+tf_monitoring_server_ip = "unknown yet"
+tf_db_master_ip = "192.168.1.101"
+tf_dns_ip = "192.168.1.53"
+db_master = "db01.diplomshurika.ru"
+
+[Pass2:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ~/.ssh/ansible_ed25519 cloud-user@192.168.1.100"'
+
+[Pass3:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ~/.ssh/ansible_ed25519 cloud-user@192.168.1.100"'
+tf_gitlab_int_fqdn = "gitlab-int.diplomshurika.ru"
+
+[GitLabSrv:vars]
+tf_proxy_external_ip = "37.194.14.151"
+tf_proxy_internal_ip = "192.168.1.100"
+tf_gitlab_root_pass = "DukeNukemMustDie!!!"
+
+[Runners:vars]

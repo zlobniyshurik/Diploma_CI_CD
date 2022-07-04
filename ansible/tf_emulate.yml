@@ -1,0 +1,9 @@
+---
+# Терраформ заливает на прокси часть скриптов
+# Для отладки без TF надо эти самые скрипты залить самим
+
+- name: "Emulate TF settings for proxy"
+  hosts: Proxies
+  gather_facts: false
+  roles:
+    - role: emulate_tf

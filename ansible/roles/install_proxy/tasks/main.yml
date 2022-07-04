@@ -159,7 +159,7 @@
 
 # Открываем дырки в фаерволе для местных (зона "home")
 # и публичных (зона "public") сервисов
-- name: "Allow HTTP on firewall"
+- name: "Allow HTTP on firewall (zone 'public')"
   become: true
   ansible.posix.firewalld:
     zone: "public"
@@ -168,7 +168,7 @@
     state: enabled
     immediate: true
 
-- name: "Allow HTTPS on firewall"
+- name: "Allow HTTPS on firewall (zone 'public')"
   become: true
   ansible.posix.firewalld:
     zone: "public"
@@ -176,6 +176,25 @@
     permanent: true
     state: enabled
     immediate: true
+
+- name: "Allow HTTP on firewall (zone 'home')"  # Оно как бы не нужно для боевого сервера,
+  become: true                                  # но для отладки - бесценно.
+  ansible.posix.firewalld:
+    zone: "home"
+    service: http
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: "Allow HTTPS on firewall (zone 'home')" # Оно как бы не нужно для боевого сервера,
+  become: true                                  # но для отладки - бесценно.
+  ansible.posix.firewalld:
+    zone: "home"
+    service: https
+    permanent: true
+    state: enabled
+    immediate: true
+
 
 - name: "Allow MySQL on firewall"   # На тот маловероятный случай,
   become: true                      # если захотим пользоваться MySQL-балансером.
