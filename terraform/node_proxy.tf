@@ -2,7 +2,7 @@ resource "yandex_compute_instance" "proxy" {
   name                      = var.proxy_name
   zone                      = var.geo_zone
   hostname                  = "${var.proxy_name}.${var.my_domain_tld}"
-  allow_stopping_for_update = true
+  allow_stopping_for_update = false
   labels                    = {
     ansible_group = "proxy"
   }

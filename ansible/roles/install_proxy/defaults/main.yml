@@ -8,27 +8,27 @@ proxy_my_domain_tld: "example.com"
 # server_string - имя сайта (или сайтов через    #
 # пробел)                                        #
 # server_log_dir - имя подпапки в логе nginx'а   #
-# proxy_pass - имя сервера, куда перенаправляем  #
-# траффик                                        #
+# proxy_pass - протокол и имя сервера, куда      #
+# перенаправляем траффик                         #
 ##################################################
 proxy_settings:
   www:
     server_string: "www.{{ proxy_my_domain_tld }} {{ proxy_my_domain_tld }}"
     server_log_dir: "www"
-    proxy_pass: "{{ tf_app_server_fqdn }}"
+    proxy_pass: "https://{{ tf_app_server_fqdn }}"
   grafana:
     server_string: "grafana.{{ proxy_my_domain_tld }}"
     server_log_dir: "grafana"
-    proxy_pass: "monitoring.{{ proxy_my_domain_tld }}"
+    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}"
   prometheus:
     server_string: "prometheus.{{ proxy_my_domain_tld }}"
     server_log_dir: "prometheus"
-    proxy_pass: "monitoring.{{ proxy_my_domain_tld }}"
+    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}:9090"
   alertmanager:
     server_string: "alertmanager.{{ proxy_my_domain_tld }}"
     server_log_dir: "alertmanager"
-    proxy_pass: "monitoring.{{ proxy_my_domain_tld }}"
+    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}"
   gitlab:
     server_string: "gitlab.{{ proxy_my_domain_tld }}"
     server_log_dir: "gitlab"
-    proxy_pass: "{{ tf_gitlab_server_fqdn }}"
+    proxy_pass: "https://{{ tf_gitlab_server_fqdn }}"

@@ -202,6 +202,7 @@ external_url '{{ install_gitlab_external_url }}'
 ###! **Add the IP address for your reverse proxy to the list, otherwise users
 ###!   will appear signed in from that address.**
 # gitlab_rails['trusted_proxies'] = []
+gitlab_rails['trusted_proxies'] = ['{{ tf_proxy_internal_ip }}']
 
 ### Content Security Policy
 ####! Customize if you want to enable the Content-Security-Policy header, which
@@ -239,6 +240,12 @@ external_url '{{ install_gitlab_external_url }}'
 ### Monitoring settings
 ###! IP whitelist controlling access to monitoring endpoints
 # gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/8', '::1/128']
+{% if tf_monitoring_server_ip|length %}
+gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/8', '::1/128', '{{ tf_monitoring_server_ip }}']
+{% else %}
+gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/8', '::1/128']
+{% endif %}
+
 
 ### Shutdown settings
 ###! Defines an interval to block healthcheck,
@@ -901,6 +908,11 @@ gitlab_rails['initial_shared_runners_registration_token'] = "{{ install_gitlab_r
 # gitlab_workhorse['pprof_listen_addr'] = "''"
 
 # gitlab_workhorse['prometheus_listen_addr'] = "localhost:9229"
+{% if tf_monitoring_server_ip|length %}
+gitlab_workhorse['prometheus_listen_addr'] = "0.0.0.0:9229"
+{% else %}
+gitlab_workhorse['prometheus_listen_addr'] = "localhost:9229"
+{% endif %}
 
 # gitlab_workhorse['dir'] = "/var/opt/gitlab/gitlab-workhorse"
 # gitlab_workhorse['log_directory'] = "/var/log/gitlab/gitlab-workhorse"
@@ -1063,6 +1075,12 @@ gitlab_rails['initial_shared_runners_registration_token'] = "{{ install_gitlab_r
 # sidekiq['metrics_enabled'] = true
 # sidekiq['exporter_log_enabled'] = false
 # sidekiq['listen_address'] = "localhost"
+{% if tf_monitoring_server_ip|length %}
+sidekiq['listen_address'] = "0.0.0.0"
+{% else %}
+sidekiq['listen_address'] = "localhost"
+{% endif %}
+
 # sidekiq['listen_port'] = 8082
 
 ##! Specifies where health-check endpoints should be made available for Sidekiq processes.
@@ -1982,6 +2000,12 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 # monitoring_role['enable'] = true
 
 # prometheus['enable'] = true
+{% if tf_monitoring_server_ip|length %}
+prometheus['enable'] = false
+{% else %}
+prometheus['enable'] = true
+{% endif %}
+
 # prometheus['monitor_kubernetes'] = true
 # prometheus['username'] = 'gitlab-prometheus'
 # prometheus['group'] = 'gitlab-prometheus'
@@ -2059,6 +2083,12 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 ### This value should be the address at which Prometheus is available to a GitLab Rails(Puma, Sidekiq) node.
 ################################################################################
 # gitlab_rails['prometheus_address'] = 'your.prom:9090'
+{% if tf_monitoring_server_ip|length %}
+gitlab_rails['prometheus_address'] = '{{tf_monitoring_server_ip}}:9090'
+{% else %}
+
+{% endif %}
+
 
 ################################################################################
 ## Prometheus Alertmanager
@@ -2100,6 +2130,11 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 
 ##! Advanced settings. Should be changed only if absolutely needed.
 # node_exporter['listen_address'] = 'localhost:9100'
+{% if tf_monitoring_server_ip|length %}
+node_exporter['listen_address'] = '0.0.0.0:9100'
+{% else %}
+node_exporter['listen_address'] = 'localhost:9100'
+{% endif %}
 
 ##! Service name used to register Node Exporter as a Consul service
 # node_exporter['consul_service_name'] = 'node-exporter'
@@ -2123,6 +2158,11 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 
 ##! Advanced settings. Should be changed only if absolutely needed.
 # redis_exporter['listen_address'] = 'localhost:9121'
+{% if tf_monitoring_server_ip|length %}
+redis_exporter['listen_address'] = '0.0.0.0:9121'
+{% else %}
+redis_exporter['listen_address'] = 'localhost:9121'
+{% endif %}
 
 ##! Service name used to register Redis Exporter as a Consul service
 # redis_exporter['consul_service_name'] = 'redis-exporter'
@@ -2139,6 +2179,12 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 # postgres_exporter['log_directory'] = '/var/log/gitlab/postgres-exporter'
 # postgres_exporter['flags'] = {}
 # postgres_exporter['listen_address'] = 'localhost:9187'
+{% if tf_monitoring_server_ip|length %}
+postgres_exporter['listen_address'] = '0.0.0.0:9187'
+{% else %}
+postgres_exporter['listen_address'] = 'localhost:9187'
+{% endif %}
+
 # postgres_exporter['env_directory'] = '/opt/gitlab/etc/postgres-exporter/env'
 # postgres_exporter['env'] = {
 #   'SSL_CERT_DIR' => "/opt/gitlab/embedded/ssl/certs/"
@@ -2177,6 +2223,11 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 ##! Advanced settings. Should be changed only if absolutely needed.
 # gitlab_exporter['server_name'] = 'webrick'
 # gitlab_exporter['listen_address'] = 'localhost'
+{% if tf_monitoring_server_ip|length %}
+gitlab_exporter['listen_address'] = '0.0.0.0'
+{% else %}
+gitlab_exporter['listen_address'] = 'localhost'
+{% endif %}
 # gitlab_exporter['listen_port'] = '9168'
 
 ##! Manage gitlab-exporter sidekiq probes. false by default when Sentinels are
@@ -2311,6 +2362,12 @@ nginx['ssl_certificate_key'] = "{{ install_gitlab_cert_key }}"
 # gitaly['certificate_path'] = "/var/opt/gitlab/gitaly/certificate.pem"
 # gitaly['key_path'] = "/var/opt/gitlab/gitaly/key.pem"
 # gitaly['prometheus_listen_addr'] = "localhost:9236"
+{% if tf_monitoring_server_ip|length %}
+gitaly['prometheus_listen_addr'] = "0.0.0.0:9236"
+{% else %}
+gitaly['prometheus_listen_addr'] = "localhost:9236"
+{% endif %}
+
 # gitaly['logging_level'] = "warn"
 # gitaly['logging_format'] = "json"
 # gitaly['logging_sentry_dsn'] = "https://<key>:<secret>@sentry.io/<project>"

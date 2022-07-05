@@ -72,6 +72,6 @@ server {
 
 			proxy_set_header Host $host;
 
-			proxy_pass https://{{ item.value.proxy_pass }}$request_uri;
+			proxy_pass {{ item.value.proxy_pass }}$request_uri;
 		}
 	}

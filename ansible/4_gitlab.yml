@@ -33,6 +33,7 @@
         deploy_ssh_keys_owner: "cloud-user"
         deploy_ssh_keys_target_dir: "/home/cloud-user/.ssh"
     - role: install_common                      # Ставим комплект необходимых утилит
+    - role: install_node_exporter               # Устанавливаем Node Exporter
 
 - name: "Install Gitlab-server"
   hosts: GitLabSrv
@@ -57,6 +58,7 @@
         install_gitlab_ca_cert: "/opt/LEscript/certs/{{ tf_my_domain_tld }}/ca.cer"
         install_gitlab_fullchain_cert: "/opt/LEscript/certs/{{ tf_my_domain_tld }}/fullchain.cer"
         install_gitlab_cert_key: "/opt/LEscript/certs/{{ tf_my_domain_tld }}/{{ tf_my_domain_tld }}.key"
+        install_gitlab_monitoring_srv: "{{ tf_monitoring_server_ip }}"
 
 - name: "Install Gitlab-runner"
   hosts: Runners

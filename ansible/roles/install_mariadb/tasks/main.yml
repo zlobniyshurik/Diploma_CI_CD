@@ -5,7 +5,7 @@
   ansible.builtin.dnf:
     name:
       - mariadb-server
-      - python3-PyMySQL
+      - python3-mysqlclient
     state: present
   notify: "Enable mariadb service"
 

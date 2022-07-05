@@ -3,7 +3,7 @@ resource "yandex_compute_instance" "gitlab" {
   name                      = "${var.gitlab_name}"
   zone                      = var.geo_zone
   hostname                  = "${var.gitlab_name}.${var.my_domain_tld}"
-  allow_stopping_for_update = true
+  allow_stopping_for_update = false
 
   # Увеличиваем тайм-ауты на создание виртуалки - в ЯОблаке она
   # иногда создаётся крайне медленно, вплоть до вылета.

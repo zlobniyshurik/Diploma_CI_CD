@@ -20,8 +20,8 @@ resource "local_file" "inventory" {
       fqdn_runner         = "${yandex_compute_instance.runner.*.fqdn}"
       ip_runner           = "${yandex_compute_instance.runner.*.network_interface.0.ip_address}"
       ip_dns              = "${var.ip_dns}"
-      fqdn_monitoring     = "unknown yet"
-      ip_monitoring       = "unknown yet"
+      fqdn_monitoring     = "${yandex_compute_instance.monitoring.fqdn}"
+      ip_monitoring       = "${yandex_compute_instance.monitoring.network_interface.0.ip_address}"
     }
   )
   filename = "../ansible/inventory"

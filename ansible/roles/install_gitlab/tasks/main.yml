@@ -80,9 +80,64 @@
     owner: "root"
     group: "root"
     mode: "0644"
-  notify: "Reconfigure GitLab"
+
+# Открываем порты в фаерволе для мониторинга
+- name: "Allow monitoring access"
+  block:
+    - name: "Allow 9229/tcp (workhorse)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9229/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9121/tcp (redis)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9121/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9187/tcp (postgresql)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9187/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9094/tcp (alert manager)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9094/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9100/tcp (???)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9100/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9090/tcp (node exporter)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9090/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+  when: install_gitlab_monitoring_srv != ""
+  become: true
 
 # Запускаем первичную конфигурацию GitLab'а
-- name: "Reconfigure GitLab (flush handlers)"
-  ansible.builtin.meta:
-    flush_handlers
+- name: "Reconfigure Gitlab"
+  become: true
+  ansible.builtin.command:
+    cmd: "sudo gitlab-ctl reconfigure"
+  changed_when: false

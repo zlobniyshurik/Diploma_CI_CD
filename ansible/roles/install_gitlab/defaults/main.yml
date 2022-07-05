@@ -38,3 +38,6 @@ install_gitlab_proxy_internal_ip: ""
 
 # Reverse proxy port, if exists
 install_gitlab_proxy_port: ""
+
+# IP of external prometheus server (if exists) or empty string
+install_gitlab_monitoring_srv: ""

@@ -40,6 +40,7 @@
         - "{{ db_nodename }}"
         - "%.{{ ansible_domain }}"
         - "{{ cluster_network }}"
+        - "192.168.1.%"
         - "127.0.0.1"
         - "::1"
         - "localhost"
@@ -98,6 +99,10 @@
         priv: '*.*:REPLICATION SLAVE'
         state: present
   when: db_nodename == cluster_master
+
+- name: "Debug sleep"
+  ansible.builtin.command:
+    cmd: "sleep 30"
 
 # Этот пункт работает ТОЛЬКО для SLAVE-НОД
 - name: "Setup slave node(s)"

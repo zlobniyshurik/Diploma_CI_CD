@@ -19,6 +19,7 @@
   gather_facts: true
   roles:
     - role: install_common                            # Установка набора полезных утилит
+    - role: install_node_exporter                     # Установка Node Exporter'а
     - role: deploy_ssh_keys                           # Загружаем SSH-ключи в прокси
       vars:
         deploy_ssh_keys_priv_dir: "./ssh"

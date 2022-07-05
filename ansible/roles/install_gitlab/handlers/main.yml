@@ -5,8 +5,3 @@
     name: "postfix.service"
     enabled: "{{ install_gitlab_postfix_enabled }}"
     state: "{{ install_gitlab_postfix_state }}"
-
-- name: "Reconfigure GitLab"
-  become: true
-  ansible.builtin.command:
-    cmd: "gitlab-ctl reconfigure"

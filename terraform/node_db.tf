@@ -5,7 +5,7 @@ resource "yandex_compute_instance" "db" {
   count                     = var.db_count
   zone                      = var.geo_zone
   hostname                  = "${var.db_name_prefix}${count.index+1}.${var.my_domain_tld}"
-  allow_stopping_for_update = true
+  allow_stopping_for_update = false
 
   # Увеличиваем тайм-ауты на создание виртуалки - в ЯОблаке она
   # иногда создаётся крайне медленно, вплоть до вылета.

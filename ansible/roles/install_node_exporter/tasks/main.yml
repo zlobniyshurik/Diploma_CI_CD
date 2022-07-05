@@ -68,6 +68,7 @@
 
 # И, пока не забыли, открываем доступ в фаерволе
 - name: "Enable access to port 9100/tcp in firewall"
+  become: true
   ansible.posix.firewalld:
     zone: "home"
     port: "9100/tcp"

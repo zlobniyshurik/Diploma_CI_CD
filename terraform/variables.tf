@@ -112,3 +112,10 @@ variable "runner_count"  {
   type        = number
   default     = 1
 }
+
+# Monitoring nodename
+variable "monitoring_name" {
+  description = "Monitoring host name"
+  type        = string
+  default     = "monitoring"
+}

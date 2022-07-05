@@ -20,6 +20,7 @@
         deploy_ssh_keys_owner: "cloud-user"
         deploy_ssh_keys_target_dir: "/home/cloud-user/.ssh"
     - role: install_common                      # Ставим комплект необходимых утилит
+    - role: install_node_exporter               # Устанавливаем Node Exporter
 
 # Устанавливаем кластер БД и
 # подготавливаем базу для WordPress'а
@@ -34,6 +35,7 @@
     - role: setup_cluster                  # Настройка кластера Master-Slave из нод
       vars:
         cluster_master: "{{ db_master }}"
+        cluster_network: "172.16.%"
     - role: setup_db                       # Настройка базы для WordPress'а
       vars:
         setup_db_host: "{{ db_master }}"

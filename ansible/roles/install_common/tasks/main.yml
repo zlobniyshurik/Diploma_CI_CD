@@ -6,6 +6,7 @@
   ansible.builtin.dnf:
     name:
       - firewalld
+    update_cache: true                 #возможно, поможет при зависаниях?
   notify: "Enable firewalld service"
 
 # Запускаем фаервол
@@ -21,6 +22,7 @@
   become: true
   ansible.builtin.dnf:
     name:
+      - epel-release
       - net-tools
       - wget
       - nano
