@@ -19,21 +19,23 @@
 # Проверяем - не выкачан ли уже архив?
 - name: "Check if prometheus already got"
   ansible.builtin.stat:
-    path: "/tmp/to_unpack.tar.gz"
+    path: "/tmp/to_unpack_p.tar.gz"
   register: download_done
 
 # Выкачиваем в /tmp архив с бинарниками
+# wget - нормально работает через прокси, 
+# а вот модули Ansible - не всегда
 - name: "Download prometheus binary archive"
   become: true
   ansible.builtin.command:
-    cmd: "wget '{{ install_prometheus_url }}' -O '/tmp/to_unpack.tar.gz'"
+    cmd: "wget '{{ install_prometheus_url }}' -O '/tmp/to_unpack_p.tar.gz'"
   when: not download_done.stat.exists
 
 # Распаковываем
 - name: "Unpack archive"
   become: true
   ansible.builtin.unarchive:
-    src: "/tmp/to_unpack.tar.gz"
+    src: "/tmp/to_unpack_p.tar.gz"
     dest: "/tmp"
     remote_src: true
 
@@ -95,7 +97,7 @@
     - "/tmp/prometheus/console_libraries"
     - "/tmp/prometheus/consoles"
 
-# ... и конфиг
+# ... и конфиг по умолчанию
 - name: "Copy config to /etc/prometheus"
   become: true
   ansible.builtin.copy:
@@ -117,13 +119,13 @@
     mode: "0644"
   notify: "Start prometheus.service"
 
-# И не откладываем в долгий ящик
+# Не откладываем в долгий ящик
 - name: "Flush Handlers"
   ansible.builtin.meta:
     flush_handlers
 
 # И, пока не забыли, открываем доступ в фаерволе
-- name: "Enable access to port 9090 in firewall"
+- name: "Enable access to port 9090/tcp in firewall"
   ansible.posix.firewalld:
     zone: "home"
     port: "9090/tcp"
