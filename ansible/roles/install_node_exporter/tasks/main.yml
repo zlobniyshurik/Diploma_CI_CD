@@ -1,0 +1,76 @@
+---
+# Проверяем - не выкачан ли уже архив?
+- name: "Check if 'node exporter' already got"
+  ansible.builtin.stat:
+    path: "/tmp/to_unpack_ne.tar.gz"
+  register: download_done
+
+# Выкачиваем в /tmp архив с бинарниками
+# wget - нормально работает через прокси,
+# а вот модули Ansible - не всегда
+- name: "Download 'node exporter' binary archive"
+  become: true
+  ansible.builtin.command:
+    cmd: "wget '{{ install_node_exporter_url }}' -O '/tmp/to_unpack_ne.tar.gz'"
+  when: not download_done.stat.exists
+
+# Распаковываем
+- name: "Unpack archive"
+  become: true
+  ansible.builtin.unarchive:
+    src: "/tmp/to_unpack_ne.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+
+# Переименовываем результат
+- name: "Rename result to 'node_exporter'"
+  become: true
+  ansible.builtin.shell:
+    cmd: bash -c "mv /tmp/node_exporter-* /tmp/node_exporter"
+  changed_when: false
+
+# Переносим бинарник на место постоянного проживания
+- name: "Copy 'node_exporter' to /usr/local/bin"
+  become: true
+  ansible.builtin.copy:
+    src: "/tmp/node_exporter/node_exporter"
+    dest: "/usr/local/bin/"
+    remote_src: true
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+# Вычищаем мусор
+- name: "Delete temporary files"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: "absent"
+  with_items:
+    - "/tmp/node_exporter"
+    - "/tmp/to_unpack_ne.tar.gz"
+
+# Наконец и до сервиса добрались
+- name: "Create node_exporter.service"
+  become: true
+  ansible.builtin.template:
+    src: "templates/node_exporter.service.j2"
+    dest: "/etc/systemd/system/node_exporter.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Start node_exporter.service"
+
+# Не откладываем в долгий ящик
+- name: "Flush Handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+# И, пока не забыли, открываем доступ в фаерволе
+- name: "Enable access to port 9100/tcp in firewall"
+  ansible.posix.firewalld:
+    zone: "home"
+    port: "9100/tcp"
+    state: enabled
+    immediate: true
+    permanent: true

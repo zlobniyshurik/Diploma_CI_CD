@@ -28,4 +28,5 @@
   become_user: "root"
   remote_user: "cloud-user"
   roles:
+    - role: install_node_exporter
     - role: install_prometheus

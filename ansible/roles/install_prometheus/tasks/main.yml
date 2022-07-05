@@ -46,8 +46,6 @@
     cmd: bash -c "mv /tmp/prometheus-* /tmp/prometheus"
   changed_when: false
 
-# В современных ОС /tmp сам почистится, то есть,
-# можно делать copy вместо command/mv ;)
 # Кидаем бинарник раз...
 - name: "Copy 'prometheus' to /usr/local/bin"
   become: true
@@ -101,12 +99,22 @@
 - name: "Copy config to /etc/prometheus"
   become: true
   ansible.builtin.copy:
-    src: "/opt/prometheus/prometheus.yml"
+    src: "/tmp/prometheus/prometheus.yml"
     dest: "/etc/prometheus/"
     remote_src: true
     mode: "0644"
     owner: "{{ install_prometheus_user }}"
     group: "{{ install_prometheus_group }}"
+
+# Вычищаем мусор
+- name: "Delete temporary files"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: "absent"
+  with_items:
+    - "/tmp/prometheus"
+    - "/tmp/to_unpack_p.tar.gz"
 
 # Наконец и до сервиса добрались
 - name: "Create prometheus.service"

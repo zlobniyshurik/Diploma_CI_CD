@@ -1,0 +1,7 @@
+---
+- name: "Start node_exporter.service"
+  become: true
+  ansible.builtin.systemd:
+    name: "node_exporter.service"
+    state: "{{ install_node_exporter_state }}"
+    enabled: "{{ install_node_exporter_enable }}"
