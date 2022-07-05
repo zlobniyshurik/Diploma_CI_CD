@@ -8,6 +8,7 @@ Diplom
 Pass1
 Pass2
 Pass3
+Pass4
 
 [Pass1:children]
 Proxies
@@ -19,6 +20,9 @@ Applications
 [Pass3:children]
 GitLabSrv
 Runners
+
+[Pass4:children]
+Monitoring
 
 [Proxies]
 proxy.diplomshurika.ru ansible_host="192.168.1.100" ansible_user="cloud-user" ansible_ssh_private_key_file="~/.ssh/ansible_ed25519"
@@ -50,7 +54,7 @@ tf_app_server_ip = "192.168.1.103"
 tf_app_server_fqdn = "app.diplomshurika.ru"
 tf_gitlab_server_ip = "192.168.1.104"
 tf_gitlab_server_fqdn = "gitlab-int.diplomshurika.ru"
-tf_monitoring_server_ip = "unknown yet"
+tf_monitoring_server_ip = "192.168.1.106"
 tf_db_master_ip = "192.168.1.101"
 tf_dns_ip = "192.168.1.53"
 db_master = "db01.diplomshurika.ru"
@@ -60,7 +64,9 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 
 [Pass3:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ~/.ssh/ansible_ed25519 cloud-user@192.168.1.100"'
-tf_gitlab_int_fqdn = "gitlab-int.diplomshurika.ru"
+
+[Pass4:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ~/.ssh/ansible_ed25519 cloud-user@192.168.1.100"'
 
 [GitLabSrv:vars]
 tf_proxy_external_ip = "37.194.14.151"
@@ -68,3 +74,5 @@ tf_proxy_internal_ip = "192.168.1.100"
 tf_gitlab_root_pass = "DukeNukemMustDie!!!"
 
 [Runners:vars]
+
+[Monitoring:vars]

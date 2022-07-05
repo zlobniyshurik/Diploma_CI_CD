@@ -8,6 +8,7 @@ Diplom
 Pass1
 Pass2
 Pass3
+Pass4
 
 [Pass1:children]
 Proxies
@@ -19,6 +20,9 @@ Applications
 [Pass3:children]
 GitLabSrv
 Runners
+
+[Pass4:children]
+Monitoring
 
 [Proxies]
 ${fqdn_proxy} ansible_host="${external_ip_proxy}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
@@ -39,6 +43,9 @@ ${fqdn_gitlab_int} ansible_host="${ip_gitlab_int}" ansible_user="${ssh_login_use
 ${fqdn_runner[index]} ansible_host="${ip_runner[index]}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
 %{ endfor ~}
 
+[Monitoring]
+${fqdn_monitoring} ansible_host="${ip_monitoring}" ansible_user="${ssh_login_user}" ansible_ssh_private_key_file="${ssh_ansible_key}"
+
 [all:vars]
 tf_my_domain_tld = "${tf_my_domain_tld}"
 
@@ -50,7 +57,7 @@ tf_app_server_ip = "${ip_app}"
 tf_app_server_fqdn = "${fqdn_app}"
 tf_gitlab_server_ip = "${ip_gitlab_int}"
 tf_gitlab_server_fqdn = "${fqdn_gitlab_int}"
-tf_monitoring_server_ip = "unknown yet"
+tf_monitoring_server_ip = "${ip_monitoring}"
 tf_db_master_ip = "${ip_db[0]}"
 tf_dns_ip = "${ip_dns}"
 db_master = "${fqdn_db[0]}"
@@ -60,7 +67,9 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 
 [Pass3:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ${ssh_ansible_key} ${ssh_login_user}@${external_ip_proxy}"'
-tf_gitlab_int_fqdn = "${fqdn_gitlab_int}"
+
+[Pass4:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ${ssh_ansible_key} ${ssh_login_user}@${external_ip_proxy}"'
 
 [GitLabSrv:vars]
 tf_proxy_external_ip = "${external_ip_proxy}"
@@ -68,3 +77,5 @@ tf_proxy_internal_ip = "${internal_ip_proxy}"
 tf_gitlab_root_pass = "${tf_gitlab_root_pass}"
 
 [Runners:vars]
+
+[Monitoring:vars]

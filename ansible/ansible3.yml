@@ -13,7 +13,7 @@
         generate_token_filepath: "./ssh/token"
 
 # Устанавливаем общее ПО для хостов из группы
-# Pass3 (GitLab + GitLab Runner(s) + Monitoring)
+# Pass3 (GitLab + GitLab Runner(s) )
 - name: "Common setup part for Pass3 hosts"
   hosts: Pass3
   gather_facts: true

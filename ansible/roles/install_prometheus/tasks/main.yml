@@ -1,0 +1,132 @@
+---
+# Создаём группу под prometheus
+- name: "Create group for 'prometheus'"
+  become: true
+  ansible.builtin.group:
+    name: "{{ install_prometheus_group }}"
+    state: "present"
+
+# Создаём юзера под prometheus
+- name: "Create user for 'prometheus'"
+  become: true
+  ansible.builtin.user:
+    name: "{{ install_prometheus_user }}"
+    state: "present"
+    group: "{{ install_prometheus_group }}"
+    create_home: false
+    shell: "/usr/bin/false"
+
+# Проверяем - не выкачан ли уже архив?
+- name: "Check if prometheus already got"
+  ansible.builtin.stat:
+    path: "/tmp/to_unpack.tar.gz"
+  register: download_done
+
+# Выкачиваем в /tmp архив с бинарниками
+- name: "Download prometheus binary archive"
+  become: true
+  ansible.builtin.command:
+    cmd: "wget '{{ install_prometheus_url }}' -O '/tmp/to_unpack.tar.gz'"
+  when: not download_done.stat.exists
+
+# Распаковываем
+- name: "Unpack archive"
+  become: true
+  ansible.builtin.unarchive:
+    src: "/tmp/to_unpack.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+
+# Переименовываем результат
+- name: "Rename result to 'prometheus'"
+  become: true
+  ansible.builtin.shell:
+    cmd: bash -c "mv /tmp/prometheus-* /tmp/prometheus"
+  changed_when: false
+
+# В современных ОС /tmp сам почистится, то есть,
+# можно делать copy вместо command/mv ;)
+# Кидаем бинарник раз...
+- name: "Copy 'prometheus' to /usr/local/bin"
+  become: true
+  ansible.builtin.copy:
+    src: "/tmp/prometheus/prometheus"
+    dest: "/usr/local/bin/"
+    remote_src: true
+    owner: "{{ install_prometheus_user }}"
+    group: "{{ install_prometheus_group }}"
+    mode: "0755"
+
+# Кидаем бинарник два...
+- name: "Copy 'promtool' to /usr/local/bin"
+  become: true
+  ansible.builtin.copy:
+    src: "/tmp/prometheus/promtool"
+    dest: "/usr/local/bin/"
+    remote_src: true
+    owner: "{{ install_prometheus_user }}"
+    group: "{{ install_prometheus_group }}"
+    mode: "0755"
+
+# Создаём каталоги
+- name: "Create catalogs"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: "directory"
+    owner: "{{ install_prometheus_user }}"
+    group: "{{ install_prometheus_group }}"
+    mode: "0755"
+  with_items:
+    - "/etc/prometheus"
+    - "/var/lib/prometheus"
+
+# Копируем всякие нужные штуки в /etc/prometheus
+- name: "Copy subcatalogs to /etc/prometheus"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/prometheus/"
+    remote_src: true
+    mode: "0755"
+    owner: "{{ install_prometheus_user }}"
+    group: "{{ install_prometheus_group }}"
+  with_items:
+    - "/tmp/prometheus/console_libraries"
+    - "/tmp/prometheus/consoles"
+
+# ... и конфиг
+- name: "Copy config to /etc/prometheus"
+  become: true
+  ansible.builtin.copy:
+    src: "/opt/prometheus/prometheus.yml"
+    dest: "/etc/prometheus/"
+    remote_src: true
+    mode: "0644"
+    owner: "{{ install_prometheus_user }}"
+    group: "{{ install_prometheus_group }}"
+
+# Наконец и до сервиса добрались
+- name: "Create prometheus.service"
+  become: true
+  ansible.builtin.template:
+    src: "templates/prometheus.service.j2"
+    dest: "/etc/systemd/system/prometheus.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Start prometheus.service"
+
+# И не откладываем в долгий ящик
+- name: "Flush Handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+# И, пока не забыли, открываем доступ в фаерволе
+- name: "Enable access to port 9090 in firewall"
+  ansible.posix.firewalld:
+    zone: "home"
+    port: "9090/tcp"
+    state: enabled
+    immediate: true
+    permanent: true

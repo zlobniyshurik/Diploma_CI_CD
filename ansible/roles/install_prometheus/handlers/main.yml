@@ -1,0 +1,7 @@
+---
+- name: "Start prometheus.service"
+  become: true
+  ansible.builtin.systemd:
+    name: "prometheus.service"
+    state: "{{ install_prometheus_state }}"
+    enabled: "{{ install_prometheus_enable }}"

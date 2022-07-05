@@ -1,0 +1,18 @@
+---
+# URL for prometheus binary
+install_prometheus_url: "https://github.com/prometheus/prometheus/releases/download/v2.36.2/prometheus-2.36.2.linux-amd64.tar.gz"
+
+# Target directory
+install_prometheus_dir: "/opt/prometheus"
+
+# Prometheus user
+install_prometheus_user: "prometheus"
+
+# Prometheus group
+install_prometheus_group: "prometheus"
+
+# prometheus.service state after install (started/stopped/reloaded/restarted)
+install_prometheus_state: "started"
+
+# prometheus.service autostart enable (true/false)
+install_prometheus_enable: "true"
