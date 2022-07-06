@@ -213,5 +213,5 @@ TODO: CI/CD
 Примеры работы **`Prometheus`**:  
 ![Prometheus пытается рисовать график](./pic/diplom_7_1.png)
 
-![Node Exporter'ы в Prometheus](./pic/diplom_7_2.png)
+![Node Exporter'ы в Prometheus](./pic/diplom_7_1a.png)
 
