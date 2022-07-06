@@ -19,7 +19,7 @@ proxy_settings:
   grafana:
     server_string: "grafana.{{ proxy_my_domain_tld }}"
     server_log_dir: "grafana"
-    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}"
+    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}:3000"
   prometheus:
     server_string: "prometheus.{{ proxy_my_domain_tld }}"
     server_log_dir: "prometheus"

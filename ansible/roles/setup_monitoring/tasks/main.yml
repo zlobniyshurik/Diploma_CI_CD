@@ -1,0 +1,20 @@
+---
+# Эта роль жёстко задана под дипломную конфигурацию
+# никаких переменных, всё прибьём гвоздями
+
+# Настраиваем Prometheus
+- name: "Prometheus setup"
+  become: true
+  ansible.builtin.template:
+    src: "templates/prometheus.yml.j2"
+    dest: "/etc/prometheus/prometheus.yml"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+# Перезапускаем его нафиг
+- name: "Restart Prometheus"
+  become: true
+  ansible.builtin.systemd:
+    name: "prometheus.service"
+    state: "restarted"

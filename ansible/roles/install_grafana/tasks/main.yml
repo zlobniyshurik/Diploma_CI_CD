@@ -1,0 +1,34 @@
+---
+# Устанавливаем Grafana
+- name: "Install Grafana"
+  become: true
+  ansible.builtin.dnf:
+    name: "grafana"
+    state: present
+  notify: "Setup grafana-server.service"
+
+# Заливаем конфиг
+- name: "Copy config"
+  become: true
+  ansible.builtin.template:
+    src: "templates/grafana.ini.j2"
+    dest: "/etc/grafana/grafana.ini"
+    backup: true
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+# Дергаём сервис
+- name: "Flush Handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+# Открываем порт в фаерволе для зоны "home"
+- name: "Enable in firewall Grafana access to zone 'home'"
+  become: true
+  ansible.posix.firewalld:
+    zone: "home"
+    permanent: true
+    immediate: true
+    service: "grafana"
+    state: "enabled"

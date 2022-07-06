@@ -1,8 +1,8 @@
 ---
 # Устанавливаем общее ПО для хостов из группы
-# Pass4 (Monitoring)
-- name: "Common setup part for Pass4 hosts"
-  hosts: Pass4
+# Phase2 (Monitoring)
+- name: "Common setup part for Phase2 hosts (Monitoring)"
+  hosts: Phase2
   gather_facts: true
   become: true
   become_user: "root"
@@ -30,3 +30,7 @@
   roles:
     - role: install_node_exporter
     - role: install_prometheus
+    - role: install_grafana
+      vars:
+        install_grafana_external_url: "grafana.{{ tf_my_domain_tld }}"
+    - role: setup_monitoring

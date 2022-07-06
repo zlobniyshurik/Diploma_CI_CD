@@ -1,8 +1,8 @@
 ---
 # Устанавливаем общее ПО для хостов из группы
-# Pass2 (DB nodes + Application-server)
-- name: "Common setup part for Pass2 hosts"
-  hosts: Pass2
+# Phase3 (DB nodes + Application-server)
+- name: "Common setup part for Pass3 hosts (DB nodes + Application-server)"
+  hosts: Phase3
   gather_facts: true
   become: true
   become_user: "root"

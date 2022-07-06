@@ -1,0 +1,18 @@
+---
+# Public name for Grafana
+install_grafana_external_url: "grafana.example.com"
+
+# Enable service after install (true/false)
+install_grafana_enabled: true
+
+# State service after install (started/reloaded/restarted/stopped)
+install_grafana_state: "started"
+
+# Admin account for initial login
+install_grafana_admin: "admin"
+
+# Admin password for initial login
+install_grafana_admin_initial_pass: "admin"
+
+# Secret key (20 symbols)
+install_grafana_sign_key: "ChAnGeMe901234567890"

@@ -2,8 +2,11 @@
 # Token for connect to GitLab
 setup_glrunner_token: "98765432109876543210"
 
-# Gitlab host URL
-setup_glrunner_host_url: "https://example.com"
+# Gitlab server URL
+setup_glrunner_srv_url: "https://example.com"
+
+# Gitlab server IP
+setup_glrunner_srv_ip: "127.0.0.1"
 
 # Runner executor
 setup_glrunner_executor: "docker"

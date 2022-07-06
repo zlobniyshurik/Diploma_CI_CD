@@ -76,6 +76,11 @@ server {
     # Пути к каталогам #
     ####################
 
+    # Блокируем доступ ко всем git-файлам и каталогам
+    location ~ /\.git {
+        deny all;
+    }
+
     location / {
         root   /var/www/{{ install_app_my_domain_tld }}/wordpress;
 
@@ -116,6 +121,8 @@ server {
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
+    
+    
 
     # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
     #

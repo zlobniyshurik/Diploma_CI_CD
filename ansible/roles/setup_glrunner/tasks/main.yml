@@ -1,4 +1,14 @@
 ---
+# Ждём, пока сервак очухается
+# раз в 5 секунд опрашиваяя его по HTTPS
+- name: "Wait for GitLab-server"
+  become: true
+  ansible.builtin.wait_for:
+    port: "443"
+    host: "{{ setup_glrunner_srv_ip }}"
+    delay: "20"
+    sleep: "5"
+
 # Задаём параметры раннера
 - name: "Setup GitLab runner"
   become: true
@@ -6,7 +16,7 @@
     cmd: >
       gitlab-runner register
       --non-interactive
-      --url "{{ setup_glrunner_host_url }}"
+      --url "{{ setup_glrunner_srv_url }}"
       --registration-token "{{ setup_glrunner_token }}"
       --executor "{{ setup_glrunner_executor }}"
       --docker-image "{{ setup_glrunner_docker_img }}"

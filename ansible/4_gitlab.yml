@@ -13,9 +13,9 @@
         generate_token_filepath: "./ssh/token"
 
 # Устанавливаем общее ПО для хостов из группы
-# Pass3 (GitLab + GitLab Runner(s) )
-- name: "Common setup part for Pass3 hosts"
-  hosts: Pass3
+# Phase4 (GitLab + GitLab Runner(s) )
+- name: "Common setup part for Phase4 hosts (GitLab + GitLab Runner(s) )"
+  hosts: Phase4
   gather_facts: true
   become: true
   become_user: "root"
@@ -33,7 +33,6 @@
         deploy_ssh_keys_owner: "cloud-user"
         deploy_ssh_keys_target_dir: "/home/cloud-user/.ssh"
     - role: install_common                      # Ставим комплект необходимых утилит
-    - role: install_node_exporter               # Устанавливаем Node Exporter
 
 - name: "Install Gitlab-server"
   hosts: GitLabSrv
@@ -60,16 +59,19 @@
         install_gitlab_cert_key: "/opt/LEscript/certs/{{ tf_my_domain_tld }}/{{ tf_my_domain_tld }}.key"
         install_gitlab_monitoring_srv: "{{ tf_monitoring_server_ip }}"
 
-- name: "Install Gitlab-runner"
+- name: "Install Gitlab-runner(s)"
   hosts: Runners
   gather_facts: false
   become: true
   become_user: "root"
   remote_user: "cloud-user"
   roles:
+    - role: install_node_exporter               # Устанавливаем Node Exporter
     - role: install_glrunner
     - role: setup_glrunner
       vars:
         setup_glrunner_token: "{{ lookup('ansible.builtin.file', './ssh/token') }}"
-        setup_glrunner_host_url: "https://{{ tf_gitlab_server_fqdn }}"
+        setup_glrunner_srv_url: "https://{{ tf_gitlab_server_fqdn }}"
+        setup_glrunner_srv_ip: "{{ tf_gitlab_server_ip }}"
         setup_glrunner_executor: "docker"
+

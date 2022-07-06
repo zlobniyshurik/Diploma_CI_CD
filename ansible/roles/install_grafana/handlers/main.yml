@@ -1,0 +1,8 @@
+---
+- name: "Setup grafana-server.service"
+  become: true
+  ansible.builtin.systemd:
+    name: "grafana-server.service"
+    state: "{{ install_grafana_state }}"
+    enabled: "{{ install_grafana_enabled }}"
+    daemon_reload: true
