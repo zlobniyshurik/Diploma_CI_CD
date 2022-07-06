@@ -177,8 +177,8 @@
     state: enabled
     immediate: true
 
-- name: "Allow HTTP on firewall (zone 'home')"  # Оно как бы не нужно для боевого сервера,
-  become: true                                  # но для отладки - бесценно.
+- name: "Allow HTTP on firewall (zone 'home')"    # Оно как бы не нужно для боевого сервера,
+  become: true                                    # но для отладки - бесценно.
   ansible.posix.firewalld:
     zone: "home"
     service: http
@@ -186,8 +186,8 @@
     state: enabled
     immediate: true
 
-- name: "Allow HTTPS on firewall (zone 'home')" # Оно как бы не нужно для боевого сервера,
-  become: true                                  # но для отладки - бесценно.
+- name: "Allow HTTPS on firewall (zone 'home')"   # Оно как бы не нужно для боевого сервера,
+  become: true                                    # но для отладки - бесценно.
   ansible.posix.firewalld:
     zone: "home"
     service: https

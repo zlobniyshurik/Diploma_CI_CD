@@ -82,28 +82,21 @@
     mode: "0644"
 
 # Открываем порты в фаерволе для мониторинга
+# Много их и не факт, что все нужны
 - name: "Allow monitoring access"
   block:
-    - name: "Allow 9229/tcp (workhorse)"
+    - name: "Allow 8082/tcp (sidekiq)"
       ansible.posix.firewalld:
         zone: "home"
-        port: "9229/tcp"
+        port: "8082/tcp"
         state: enabled
         persistent: true
         immediate: true
 
-    - name: "Allow 9121/tcp (redis)"
+    - name: "Allow 9090/tcp (node exporter)"
       ansible.posix.firewalld:
         zone: "home"
-        port: "9121/tcp"
-        state: enabled
-        persistent: true
-        immediate: true
-
-    - name: "Allow 9187/tcp (postgresql)"
-      ansible.posix.firewalld:
-        zone: "home"
-        port: "9187/tcp"
+        port: "9090/tcp"
         state: enabled
         persistent: true
         immediate: true
@@ -124,10 +117,42 @@
         persistent: true
         immediate: true
 
-    - name: "Allow 9090/tcp (node exporter)"
+    - name: "Allow 9121/tcp (redis)"
       ansible.posix.firewalld:
         zone: "home"
-        port: "9090/tcp"
+        port: "9121/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9168/tcp (gitlab exporter)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9168/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9187/tcp (postgresql)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9187/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9229/tcp (workhorse)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9229/tcp"
+        state: enabled
+        persistent: true
+        immediate: true
+
+    - name: "Allow 9236/tcp (gitaly)"
+      ansible.posix.firewalld:
+        zone: "home"
+        port: "9187/tcp"
         state: enabled
         persistent: true
         immediate: true
@@ -136,6 +161,10 @@
   become: true
 
 # Запускаем первичную конфигурацию GitLab'а
+- name: "Reconfigure starting..."
+  ansible.builtin.debug:
+    msg: "Reconfigure starting..."
+
 - name: "Reconfigure Gitlab"
   become: true
   ansible.builtin.command:

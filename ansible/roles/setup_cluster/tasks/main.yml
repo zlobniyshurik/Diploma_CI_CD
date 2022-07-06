@@ -100,9 +100,13 @@
         state: present
   when: db_nodename == cluster_master
 
-- name: "Debug sleep"
+# В питоновских библиотеках для MySQL бага:
+# "get master status" дохнет на слишком быстрых машинах
+# Надо притормозить перед этой операцией, тогда сработает
+- name: "Magic sleep"
   ansible.builtin.command:
     cmd: "sleep 30"
+  changed_when: false
 
 # Этот пункт работает ТОЛЬКО для SLAVE-НОД
 - name: "Setup slave node(s)"

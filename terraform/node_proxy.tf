@@ -45,6 +45,8 @@ resource "yandex_compute_instance" "proxy" {
 
   # Криво, но с передачей секретных параметров в конкретную машину в ансибл
   # костылей получается ещё больше
+  # UPD. На самом деле, нет... Но это я понял потом, а пока оставляю этот
+  # кусок кода как напоминание о возможности менять содержимое VM с помощью TF
   connection {
     type     = "ssh"
     host     = "${yandex_compute_instance.proxy.network_interface.0.nat_ip_address}"

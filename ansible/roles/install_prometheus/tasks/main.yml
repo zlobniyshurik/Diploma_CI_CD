@@ -23,7 +23,7 @@
   register: download_done
 
 # Выкачиваем в /tmp архив с бинарниками
-# wget - нормально работает через прокси, 
+# wget - нормально работает через прокси,
 # а вот модули Ansible - не всегда
 - name: "Download prometheus binary archive"
   become: true
