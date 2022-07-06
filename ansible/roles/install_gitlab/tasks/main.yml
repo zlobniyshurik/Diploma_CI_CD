@@ -68,7 +68,6 @@
     name: "/opt/gitlab-ee-15.1.0-ee.0.el8.x86_64.rpm"
     state: "present"
     disable_gpg_check: true
-  notify: "Reconfigure GitLab"
 
 # Копируем настройки (имя сайта, пароль root, e.t.c.)
 - name: "Copy GitLab settings"
@@ -90,15 +89,7 @@
         zone: "home"
         port: "8082/tcp"
         state: enabled
-        persistent: true
-        immediate: true
-
-    - name: "Allow 9090/tcp (node exporter)"
-      ansible.posix.firewalld:
-        zone: "home"
-        port: "9090/tcp"
-        state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
     - name: "Allow 9094/tcp (alert manager)"
@@ -106,15 +97,15 @@
         zone: "home"
         port: "9094/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
-    - name: "Allow 9100/tcp (???)"
+    - name: "Allow 9100/tcp (node exporter)"
       ansible.posix.firewalld:
         zone: "home"
         port: "9100/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
     - name: "Allow 9121/tcp (redis)"
@@ -122,7 +113,7 @@
         zone: "home"
         port: "9121/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
     - name: "Allow 9168/tcp (gitlab exporter)"
@@ -130,7 +121,7 @@
         zone: "home"
         port: "9168/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
     - name: "Allow 9187/tcp (postgresql)"
@@ -138,7 +129,7 @@
         zone: "home"
         port: "9187/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
     - name: "Allow 9229/tcp (workhorse)"
@@ -146,7 +137,7 @@
         zone: "home"
         port: "9229/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
     - name: "Allow 9236/tcp (gitaly)"
@@ -154,7 +145,7 @@
         zone: "home"
         port: "9187/tcp"
         state: enabled
-        persistent: true
+        permanent: true
         immediate: true
 
   when: install_gitlab_monitoring_srv != ""
@@ -163,10 +154,27 @@
 # Запускаем первичную конфигурацию GitLab'а
 - name: "Reconfigure starting..."
   ansible.builtin.debug:
-    msg: "Reconfigure starting..."
+    msg: [
+      "!!!Внимание!!!",
+      "Здесь водятся драконы и баги!",
+      "Задача начальной реконфигурации GitLab`а выполняется минуты 2, пусть 5, если мы в облаке.",
+      " ",
+      "Если прошло уже минут 10, а реконфигурация всё 'идёт...' - значит Ansible завис, а реконфигурация",
+      "на самом деле завершилась и все сервисы, в том числе и гитлаб уже поднялись.",
+      "В общем, смело жмите Ctrl-C и прерывайте таску - она последняя и уже выполнилась.",
+      " ",
+      "Я НЕ ЗНАЮ что происходит, и почему это происходит только в ЯОблаке и только на этой операции",
+      "Ровно те же плеи на локальной KVM-ферме отрабатывают идеально, весь софт 1в1, сетевая конфигурация",
+      "с отключенным интернетом для большей части машин, адреса/явки/пароли, отключенный root - всё",
+      "аналогично облаку. Но вот на локальной ферме работает, а в ЯОблаке - виснет.",
+      " ",
+      "Мне некогда уже разбираться с этим багом. Но я НАДОЛГО ЗАПОМНЮ ЯОблако, ибо этот баг не единственный,",
+      "что заставил потратить меня несколько дней на ровном месте.",
+      "Надеюсь, в других облаках ситуация получше."
+    ]
 
 - name: "Reconfigure Gitlab"
   become: true
-  ansible.builtin.command:
-    cmd: "sudo gitlab-ctl reconfigure"
+  ansible.builtin.shell:
+    cmd: bash -c "sudo gitlab-ctl reconfigure"
   changed_when: false
