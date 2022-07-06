@@ -1,6 +1,7 @@
 ---
 # Ждём, пока сервак очухается
 # раз в 5 секунд опрашиваяя его по HTTPS
+# На ожидание даётся, максимум, 10 минут
 - name: "Wait for GitLab-server"
   become: true
   ansible.builtin.wait_for:
@@ -8,6 +9,7 @@
     host: "{{ setup_glrunner_srv_ip }}"
     delay: "20"
     sleep: "5"
+    timeout: "600"
 
 # Задаём параметры раннера
 - name: "Setup GitLab runner"
