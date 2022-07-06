@@ -202,3 +202,16 @@ define('WP_PROXY_BYPASS_HOSTS', 'localhost');
 
 Тем не менее, `GitLab` с раннером успешно устанавливаются, запускаются и видят друг-друга.  
 ![Запущенный гитлаб с раннером](./pic/diplom_6_1.png)
+
+TODO: CI/CD
+
+---
+## Этап 7 *(Установка Prometheus, Alert Manager, Node Exporter и Grafana)*
+
+**`Prometheus`** установлен, конфигурация опрашиваемых **`Node Exporter`**'ов добавляется автоматически при заливке ПО.
+
+Примеры работы **`Prometheus`**:  
+![Prometheus пытается рисовать график](./pic/diplom_7_1.png)
+
+![Node Exporter'ы в Prometheus](./pic/diplom_7_2.png)
+
