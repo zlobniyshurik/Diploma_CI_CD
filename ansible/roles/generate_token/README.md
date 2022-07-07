@@ -1,4 +1,4 @@
-# GENERATE_SSH_KEYPAIR
+# GENERATE_TOKEN
 
 ## Выполняемые действия
 
