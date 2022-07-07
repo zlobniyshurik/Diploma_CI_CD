@@ -27,10 +27,16 @@ scrape_configs:
 
     static_configs:
       - targets: ["localhost:9090"]
+  - job_name: "node_exporter"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
       - targets: ["localhost:9100"]
-      - targets: ["{{ tf_proxy_internal_ip }}:9100"]
-      - targets: ["{{ tf_db_master_ip }}:9100"]
-      - targets: ["{{ tf_db_slave_ip }}:9100"]
-      - targets: ["{{ tf_app_server_ip }}:9100"]
-      - targets: ["{{ tf_gitlab_server_ip }}:9100"]
-      - targets: ["{{ tf_runner_ip }}:9100"]
+      - targets: ["{{ tf_proxy_name }}:9100"]
+      - targets: ["{{ db_master }}:9100"]
+      - targets: ["{{ db_slave }}:9100"]
+      - targets: ["{{ tf_app_server_fqdn }}:9100"]
+      - targets: ["{{ tf_gitlab_server_fqdn }}:9100"]
+      - targets: ["{{ tf_runner_fqdn }}:9100"]

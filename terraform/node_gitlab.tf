@@ -14,7 +14,7 @@ resource "yandex_compute_instance" "gitlab" {
   }
 
   # В режиме 'stage' создаём виртуалку с 4 ядрами, 4 Gb RAM и производительностью ядер 100%,
-  # В противном случае выделяем 4ядра, 4Gb RAM и производительностью 100%
+  # В противном случае выделяем 4ядра, 4Gb RAM и производительностью 100% :)
   # тут сколько не давай - всё мало, особенно в тормозном облаке
   resources {
     cores  = (terraform.workspace == "stage") ? 4 : 4
@@ -27,7 +27,7 @@ resource "yandex_compute_instance" "gitlab" {
       image_id    = var.boot_disk_image_id
       name        = "root-${var.gitlab_name}"
       type        = "network-ssd"
-      size        = "15"
+      size        = "20"
     }
   }
 

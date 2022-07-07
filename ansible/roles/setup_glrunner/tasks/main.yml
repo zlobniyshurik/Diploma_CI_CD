@@ -11,6 +11,12 @@
     sleep: "5"
     timeout: "600"
 
+# Сразу не ломимся - прокси 502 ошибку выдаст,
+# лучше ещё 10 секунд подождать
+- name: "Wait 10s"
+  ansible.builtin.wait_for:
+    timeout: "10"
+
 # Задаём параметры раннера
 - name: "Setup GitLab runner"
   become: true

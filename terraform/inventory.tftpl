@@ -61,10 +61,12 @@ tf_app_server_fqdn = "${fqdn_app}"
 tf_gitlab_server_ip = "${ip_gitlab_int}"
 tf_gitlab_server_fqdn = "${fqdn_gitlab_int}"
 tf_runner_ip = "${ip_runner[0]}"
+tf_runner_fqdn = "${fqdn_runner[0]}"
 tf_monitoring_server_ip = "${ip_monitoring}"
 tf_db_master_ip = "${ip_db[0]}"
 tf_db_slave_ip = "${ip_db[1]}"
 db_master = "${fqdn_db[0]}"
+db_slave = "${fqdn_db[1]}"
 
 [Phase2:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q -i ${ssh_ansible_key} ${ssh_login_user}@${external_ip_proxy}"'
