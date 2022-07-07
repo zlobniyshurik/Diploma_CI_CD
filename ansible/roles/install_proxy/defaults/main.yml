@@ -8,8 +8,8 @@ proxy_my_domain_tld: "example.com"
 # server_string - имя сайта (или сайтов через    #
 # пробел)                                        #
 # server_log_dir - имя подпапки в логе nginx'а   #
-# proxy_pass - протокол и имя сервера, куда      #
-# перенаправляем траффик                         #
+# proxy_pass - протокол, имя сервера и порт,     #
+# куда перенаправляем траффик                    #
 ##################################################
 proxy_settings:
   www:
@@ -27,7 +27,7 @@ proxy_settings:
   alertmanager:
     server_string: "alertmanager.{{ proxy_my_domain_tld }}"
     server_log_dir: "alertmanager"
-    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}"
+    proxy_pass: "http://monitoring.{{ proxy_my_domain_tld }}:9093"
   gitlab:
     server_string: "gitlab.{{ proxy_my_domain_tld }}"
     server_log_dir: "gitlab"
