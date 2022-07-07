@@ -213,8 +213,19 @@ TODO: CI/CD
 Примеры работы **`Prometheus`**:  
 ![Prometheus пытается рисовать график](./pic/diplom_7_1.png)
 
+---
 ![Node Exporter'ы в Prometheus](./pic/diplom_7_1a.png)
 
-**`Grafana`** тоже работает:
+---
+**`Alert Manager`** в наличии *(блёклый он какой-то)*:  
+![Alert Manager](./pic/diplom_7_4.png)
+
+---
+Комбинация из **`Prometheus`**'а и **`Alert Manager`**'а даже ругается на некоторые недостатки дипломной конфигурации:  
+![Alert Manager в Prometheus](./pic/diplom_7_3.png)
+
+---
+**`Grafana`** тоже работает:  
+*(Правда, указывать ей источник данных и красивый дашборд пока приходится вручную)*  
 ![Grafana с пачкой графиков](./pic/diplom_7_2.png)
 
