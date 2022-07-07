@@ -215,3 +215,6 @@ TODO: CI/CD
 
 ![Node Exporter'ы в Prometheus](./pic/diplom_7_1a.png)
 
+**`Grafana`** тоже работает:
+![Grafana с пачкой графиков](./pic/diplom_7_2.png)
+
