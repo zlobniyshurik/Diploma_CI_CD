@@ -1,0 +1,23 @@
+---
+# Устанавливаем Alert Manager
+- name: "Install Alert Manager"
+  become: true
+  ansible.builtin.dnf:
+    name: "golang-github-prometheus-alertmanager"
+    state: "present"
+  notify: "Start prometheus-alertmanager.service"
+
+# Не откладываем в долгий ящик
+- name: "Flush Handlers"
+  ansible.builtin.meta:
+    flush_handlers
+
+# И, пока не забыли, открываем доступ в фаерволе
+# Хотя, если подумать, не сильно-то оно и нужно
+- name: "Enable access to port 9093/tcp in firewall"
+  ansible.posix.firewalld:
+    zone: "home"
+    port: "9093/tcp"
+    state: enabled
+    immediate: true
+    permanent: true

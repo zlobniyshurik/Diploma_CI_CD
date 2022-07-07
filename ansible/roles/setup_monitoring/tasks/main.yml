@@ -12,6 +12,19 @@
     group: "root"
     mode: "0644"
 
+# Скармливаем ему правила для AlertManager'а
+- name: "Alert Manager setup"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/prometheus/"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items:
+    - "files/alerts_node_exporter.yml"
+    - "files/alerts_prometheus.yml"
+
 # Перезапускаем его нафиг
 - name: "Restart Prometheus"
   become: true

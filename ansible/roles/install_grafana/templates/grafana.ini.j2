@@ -38,7 +38,7 @@ http_addr =
 http_port = 3000
 
 # The public facing domain name used to access grafana from a browser
-domain = {{ tf_my_domain_tld }}
+domain = {{ install_grafana_external_url }}
 
 # Redirect to correct domain if host header does not match domain
 # Prevents DNS rebinding attacks

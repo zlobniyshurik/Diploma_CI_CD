@@ -1,0 +1,7 @@
+---
+- name: "Start prometheus-alertmanager.service"
+  become: true
+  ansible.builtin.systemd:
+    name: "prometheus-alertmanager.service"
+    state: "{{ install_alertmanager_state }}"
+    enabled: "{{ install_alertmanager_enable }}"

@@ -30,6 +30,7 @@
   roles:
     - role: install_node_exporter
     - role: install_prometheus
+    - role: install_alertmanager
     - role: install_grafana
       vars:
         install_grafana_external_url: "grafana.{{ tf_my_domain_tld }}"

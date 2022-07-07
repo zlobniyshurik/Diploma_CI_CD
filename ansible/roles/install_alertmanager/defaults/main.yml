@@ -1,0 +1,6 @@
+---
+# prometheus-alertmanager.service state after install (started/stopped/reloaded/restarted)
+install_alertmanager_state: "started"
+
+# prometheus.service autostart enable (true/false)
+install_alertmanager_enable: "true"
