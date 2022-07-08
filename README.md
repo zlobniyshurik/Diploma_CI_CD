@@ -204,7 +204,39 @@ define('WP_PROXY_BYPASS_HOSTS', 'localhost');
 Тем не менее, `GitLab` с раннером успешно устанавливаются, запускаются и видят друг-друга.  
 ![Запущенный гитлаб с раннером](./pic/diplom_6_1.png)
 
-TODO: CI/CD
+---
+Далее полагается создать нового пользователя  
+*(ибо из-под администратора работать небезопасно и просто неприлично)*.
+
+Увы, несмотря на теоретическую возможность создания новых пользователей в консоли или через API, реально это сделать весьма сложно:  
+- откровенно мало документации *(работа через ***`gitlab-rails`***)*  
+- требуются грязные хаки типа парсинга страниц ради получения админского токена *(работа через ***`API`***)*.
+
+Не будем тратить недели рабочего времени на то, что можно сделать руками за 5 минут.
+
+---
+**Создаём пользователя `cicd`**  
+![Создаём пользователя](./pic/diplom_6_2.png)  
+
+---
+**Зайдя под пользователем `cicd` создаём проект `wordpress`**  
+![Создаём проект](./pic/diplom_6_3.png)  
+
+---
+**На сервере приложений `app.diplomshurika.ru` выгружаем на `gitlab.diplomshurika.ru` уже подготовленный автоматикой репозиторий с содержимым каталога с ***`WordPress`***'ом, запустив немудрёный скрипт:**  
+```bash
+cd /var/www/diplomshurika.ru/wordpress
+git remote add origin https://gitlab.diplomshurika.ru/cicd/wordpress.git
+git branch -M master
+git push -uf origin master
+```
+
+---
+**Возвращаемся на `gitlab.diplomshurika.ru` и видим наш `WordPress`**  
+![Репозиторий с WordPress'ом](./pic/diplom_6_4.png)
+
+---
+
 
 ---
 ## Этап 7 *(Установка Prometheus, Alert Manager, Node Exporter и Grafana)*
@@ -218,7 +250,8 @@ TODO: CI/CD
 ![Node Exporter'ы в Prometheus](./pic/diplom_7_1a.png)
 
 ---
-**`Alert Manager`** в наличии *(блёклый он какой-то)*:  
+**`Alert Manager`** в наличии:  
+*(блёклый он какой-то)*  
 ![Alert Manager](./pic/diplom_7_4.png)
 
 ---
