@@ -1,0 +1,11 @@
+stages:          # List of stages for jobs, and their order of execution
+  - deploy
+
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Some changes in repo detected..."
+    - if [ "$CI_COMMIT_TAG" = "" ] ; then echo "No tag - no deploy!";
+      else scp -q -r -i ~/.ssh/rsync.key $CI_PROJECT_DIR/ {{ setup_cicd_app_user }}@app.{{ setup_cicd_app_domain }}:{{ setup_cicd_app_dir }}/{{ setup_cicd_app_domain }}/ ;
+      fi
+    - echo "The End"

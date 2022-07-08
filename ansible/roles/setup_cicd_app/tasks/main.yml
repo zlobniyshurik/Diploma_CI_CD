@@ -1,0 +1,34 @@
+---
+# Поставим git, дабы проще было содержимое
+# WordPress в репозиторий на GitLab'е загнать
+- name: "Install git"
+  become: true
+  ansible.builtin.dnf:
+    name: "git"
+    state: "present"
+
+# Зальём в WordPress наш .gitlab-ci.yml,
+# благо nginx .git-файлы никому не показывает
+- name: "Copy .gitlab-ci.yml"
+  become: true
+  ansible.builtin.template:
+    src: "templates/.gitlab-ci.yml.j2"
+    dest: "{{ setup_cicd_app_dir }}/{{ setup_cicd_app_domain }}/wordpress/.gitlab-ci.yml"
+    owner: "nginx"
+    group: "nginx"
+    mode: "0644"
+
+# ну и создадим локальный .git репозиторий до кучи
+- name: "Create local git-repo"
+  become: true
+  ansible.builtin.shell:
+    cmd: >
+      bash -c
+      "cd '{{ setup_cicd_app_dir }}/{{ setup_cicd_app_domain }}/wordpress' &&
+      git init &&
+      git add * &&
+      git commit -m 'Initial commit'"
+
+# А дальше всё... Дальше ручками прописываем remote-репозиторий на GitLab'e
+# и пушим туда содержимое нашей локальной репы. После чего репа эта,
+# по идее, больше и не нужна вовсе.

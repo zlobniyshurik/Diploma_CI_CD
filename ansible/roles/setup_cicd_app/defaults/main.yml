@@ -1,0 +1,9 @@
+---
+# Dir with www-content on App-server
+setup_cicd_app_dir: "/var/www"
+
+# User name for ssh-connect to App-server
+setup_cicd_app_user: "cloud-user"
+
+# Domain name
+setup_cicd_app_domain: "example.com"
