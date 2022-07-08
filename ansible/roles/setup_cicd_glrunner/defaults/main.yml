@@ -1,0 +1,10 @@
+---
+# Source dir with ssh keypair
+setup_cicd_glrunner_key_dir_src: "/root/.ssh"
+
+# Target dir with ssh keypair
+setup_cicd_glrunner_key_dir_dest: "/home/gitlab-runner/.ssh"
+
+# Name of private key
+setup_cicd_glrunner_key_name: "rsync.key"
+

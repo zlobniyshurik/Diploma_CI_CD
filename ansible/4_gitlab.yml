@@ -47,7 +47,7 @@
         install_pull_files_path_ssh_key: "/home/cloud-user/.ssh/rsync.key"
         install_pull_files_src_files: "/opt/LEscript/certs/"
         install_pull_files_dest_dir: "/opt/LEscript/certs/"
-    - role: install_gitlab
+    - role: install_gitlab                                   # Устанавливаем GitLab-сервер
       vars:
         install_gitlab_root_pass: "{{ tf_gitlab_root_pass }}"
         install_gitlab_runner_token: "{{ lookup('ansible.builtin.file', './ssh/token') }}"
@@ -67,11 +67,11 @@
   remote_user: "cloud-user"
   roles:
     - role: install_node_exporter               # Устанавливаем Node Exporter
-    - role: install_glrunner
-    - role: setup_glrunner
+    - role: install_glrunner                    # Устанавливаем GitLab-runner
+    - role: setup_cicd_glrunner                 # Предустановки CI/CD в раннере
+    - role: setup_glrunner                      # Подключаем его к GitLab-серверу
       vars:
         setup_glrunner_token: "{{ lookup('ansible.builtin.file', './ssh/token') }}"
         setup_glrunner_srv_url: "https://{{ tf_gitlab_server_fqdn }}"
         setup_glrunner_srv_ip: "{{ tf_gitlab_server_ip }}"
-        setup_glrunner_executor: "docker"
-
+        setup_glrunner_executor: "shell"

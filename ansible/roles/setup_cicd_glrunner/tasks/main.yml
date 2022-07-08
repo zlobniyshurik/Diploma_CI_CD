@@ -1,0 +1,44 @@
+---
+# Создаём каталог для ключей,
+# если он ещё не создан
+- name: "Create target dir"
+  become: true
+  ansible.builtin.file:
+    path: "{{ setup_cicd_glrunner_key_dir_dest }}"
+    state: "directory"
+    owner: "gitlab-runner"
+    group: "gitlab-runner"
+    mode: "0755"
+
+# Копируем приватный ssh-ключ в каталог,
+# доступный GitLab-раннеру
+- name: "Copy private SSH-key"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ setup_cicd_glrunner_key_dir_src }}/{{ setup_cicd_glrunner_key_name }}"
+    dest: "{{ setup_cicd_glrunner_key_dir_dest }}/"
+    owner: "gitlab-runner"
+    group: "gitlab-runner"
+    mode: "0400"
+
+# Копируем публичный ssh-ключ в каталог,
+# доступный GitLab-раннеру
+- name: "Copy public SSH-key"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ setup_cicd_glrunner_key_dir_src }}/{{ setup_cicd_glrunner_key_name }}.pub"
+    dest: "{{ setup_cicd_glrunner_key_dir_dest }}/"
+    owner: "gitlab-runner"
+    group: "gitlab-runner"
+    mode: "0644"
+
+# Копируем конфигурацию ssh в каталог,
+# доступный GitLab-раннеру
+- name: "Copy config SSH"
+  become: true
+  ansible.builtin.copy:
+    src: "{{ setup_cicd_glrunner_key_dir_src }}/config"
+    dest: "{{ setup_cicd_glrunner_key_dir_dest }}/"
+    owner: "gitlab-runner"
+    group: "gitlab-runner"
+    mode: "0644"

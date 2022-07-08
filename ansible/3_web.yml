@@ -64,3 +64,8 @@
         install_app_db_name: "wordpress"
         install_app_db_user: "wordpress"
         install_app_db_pass: "wordpress"
+    - role: setup_cicd_app                                   # Предустановки для CI/CD
+      vars:                                                  # на сервере приложений
+        setup_cicd_app_domain: "{{ tf_my_domain_tld }}"
+        setup_cicd_app_dir: "/var/www"
+        setup_cicd_app_user: "cloud-user"
