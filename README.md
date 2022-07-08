@@ -256,7 +256,55 @@ git push -uf origin master
 ![Скрипт отработал - деплой прошёл](./pic/diplom_6_9.png)
 
 ---
+**Проверяем содержимое каталога с `WordPress`'ом на `app.diplomshurika.ru`**  
+![Есть файл!](./pic/diplom_6_10.png)
 
+---
+**А вот и сами скрипты, благодаря которым это чудо стало возможным:**  
+
+***.gitlab-ci.yml*** на `gitlab.diplomshurika.ru`
+```yaml
+stages:          # List of stages for jobs, and their order of execution
+  - deploy
+
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Some changes in repo detected..."
+    - if [ "$CI_COMMIT_TAG" = "" ] ; then echo "No tag - no deploy!";
+      else sudo scp -q -r -i ~/.ssh/rsync.key $CI_PROJECT_DIR cloud-user@app.diplomshurika.ru:/tmp;
+      ssh -i ~/.ssh/rsync.key cloud-user@app.diplomshurika.ru "/home/cloud-user/redeploy.sh";
+      fi
+    - echo "The End"
+```
+
+***redeploy.sh*** на `app.diplomshurika.ru`
+```bash
+#!/usr/bin/env bash
+# Останавливаем nginx
+sudo systemctl stop nginx
+
+# останавливаем PHP
+sudo systemctl stop php-fpm
+
+# Чистим /var/www/my_domain.tld/wordpress
+sudo rm -rf /var/www/diplomshurika.ru/wordpress
+
+# Выкидываем лишнее из /tmp/wordpress
+rm -rf /tmp/wordpress/.git
+
+# Переносим останки :) в WordPress
+sudo mv /tmp/wordpress /var/www/diplomshurika.ru
+
+# Переприсваиваем права на web-каталог
+sudo chown -R nginx:nginx /var/www
+
+# запускаем PHP
+sudo systemctl start php-fpm
+
+# запускаем nginx
+sudo systemctl start nginx
+```
 
 ---
 ## Этап 7 *(Установка Prometheus, Alert Manager, Node Exporter и Grafana)*
