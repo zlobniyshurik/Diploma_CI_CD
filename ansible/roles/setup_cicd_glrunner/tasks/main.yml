@@ -49,6 +49,6 @@
 # Даём gitlab-runner'у sudo без пароля
 - name: "Enable passwordless sudo for gitlab-runner"
   become: true
-  ansible.builtin.command:
-    cmd: "echo 'gitlab-runner ALL=(ALL)  NOPASSWD: ALL' >> /etc/sudoers"
+  ansible.builtin.shell:
+    cmd: 'sudo bash -c "echo \"gitlab-runner ALL=(ALL)  NOPASSWD: ALL\" >> /etc/sudoers"'
   changed_when: false
