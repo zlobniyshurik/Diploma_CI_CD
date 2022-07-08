@@ -8,7 +8,7 @@
     state: "directory"
     owner: "gitlab-runner"
     group: "gitlab-runner"
-    mode: "0755"
+    mode: "0700"
 
 # Копируем приватный ssh-ключ в каталог,
 # доступный GitLab-раннеру
@@ -20,6 +20,7 @@
     owner: "gitlab-runner"
     group: "gitlab-runner"
     mode: "0400"
+    remote_src: true
 
 # Копируем публичный ssh-ключ в каталог,
 # доступный GitLab-раннеру
@@ -31,6 +32,7 @@
     owner: "gitlab-runner"
     group: "gitlab-runner"
     mode: "0644"
+    remote_src: true
 
 # Копируем конфигурацию ssh в каталог,
 # доступный GitLab-раннеру
@@ -42,3 +44,11 @@
     owner: "gitlab-runner"
     group: "gitlab-runner"
     mode: "0644"
+    remote_src: true
+
+# Даём gitlab-runner'у sudo без пароля
+- name: "Enable passwordless sudo for gitlab-runner"
+  become: true
+  ansible.builtin.command:
+    cmd: "echo 'gitlab-runner ALL=(ALL)  NOPASSWD: ALL' >> /etc/sudoers"
+  changed_when: false

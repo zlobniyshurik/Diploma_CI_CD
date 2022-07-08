@@ -18,6 +18,16 @@
     group: "nginx"
     mode: "0644"
 
+# Зальем скрипт для редеплоя WordPress'а
+- name: "Copy redeploy.sh"
+  become: true
+  ansible.builtin.template:
+    src: "templates/redeploy.sh.j2"
+    dest: "/home/{{ setup_cicd_app_user }}/redeploy.sh"
+    owner: "{{ setup_cicd_app_user }}"
+    group: "{{ setup_cicd_app_user }}"
+    mode: "0755"
+
 # ну и создадим локальный .git репозиторий до кучи
 - name: "Create local git-repo"
   become: true
@@ -27,8 +37,13 @@
       "cd '{{ setup_cicd_app_dir }}/{{ setup_cicd_app_domain }}/wordpress' &&
       git init &&
       git add * &&
+      git add .gitlab-ci.yml &&
       git commit -m 'Initial commit'"
 
 # А дальше всё... Дальше ручками прописываем remote-репозиторий на GitLab'e
 # и пушим туда содержимое нашей локальной репы. После чего репа эта,
 # по идее, больше и не нужна вовсе.
+# cd existing_repo
+# git remote add origin https://gitlab.my_domain.tld/username/wordpress.git
+# git branch -M master
+# git push -uf origin master

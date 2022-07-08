@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Останавливаем nginx
+sudo systemctl stop nginx
+
+# останавливаем PHP
+sudo systemctl stop php-fpm
+
+# Чистим /var/www/my_domain.tld/wordpress
+sudo rm -rf {{ setup_cicd_app_dir }}/{{ setup_cicd_app_domain }}/wordpress
+
+# Выкидываем лишнее из /tmp/wordpress
+rm -rf /tmp/wordpress/.git
+
+# Переносим останки :) в WordPress
+sudo mv /tmp/wordpress {{ setup_cicd_app_dir }}/{{ setup_cicd_app_domain }}
+
+# Переприсваиваем права на web-каталог
+sudo chown -R nginx:nginx {{ setup_cicd_app_dir }}
+
+# запускаем PHP
+sudo systemctl start php-fpm
+
+# запускаем nginx
+sudo systemctl start nginx
+
+
+
